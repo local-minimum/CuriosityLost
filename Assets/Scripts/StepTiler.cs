@@ -14,10 +14,25 @@ public struct GridPos
     }
 }
 
+public struct GridRect
+{
+    public GridPos min;
+    public GridPos max;
+
+    public GridRect(int minX, int minY, int w, int h)
+    {
+        min = new GridPos(minX, minY);
+        max = new GridPos(minX + w, minY + h);
+    }
+}
+
 public enum GroundGenerationType { Mesh, TiledPrefabs};
 
+public delegate void WorldGenerated(StepTiler world);
 
 public class StepTiler : MonoBehaviour {
+
+    public static event WorldGenerated OnNewWorld;
 
     public GroundGenerationType groundGenerationType = GroundGenerationType.Mesh;
 
@@ -79,6 +94,109 @@ public class StepTiler : MonoBehaviour {
     Vector3 planarOffset;
     int[,] topology;
 
+    public IEnumerable<GridRect> GetAllPositions(int w, int h, params int[] levels)
+    {
+        int maxX = topology.GetLength(0) - w;
+        int maxY = topology.GetLength(1) - h;
+        int l = levels.Length;
+        for (int x=0; x<maxX; x++)
+        {
+            for (int y=0; y<maxY; y++)
+            {
+                bool validPos = true;
+
+                for (int offX=0; offX< w; offX++)
+                {
+                    for (int offY=0; offY< h; offY++)
+                    {
+                        int lvl = topology[x + offX, y + offY];
+                        bool coordFound = false;    
+                        for (int idL = 0; idL< l; idL++)
+                        {
+                            if (lvl == levels[idL])
+                            {
+                                coordFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!coordFound)
+                        {
+                            validPos = false;
+                            break;
+                        }
+                    }
+
+                    if (!validPos)
+                    {
+                        break;
+                    }
+                }
+                
+                if (validPos)
+                {
+                    yield return new GridRect(x, y, w, h);
+                }
+            }
+        }
+    }
+
+    public IEnumerable<GridRect> GetAllPaddedPositions(int w, int h, int edgeDistance, params int[] levels)
+    {
+        int maxX = topology.GetLength(0) - w - edgeDistance;
+        int maxY = topology.GetLength(1) - h - edgeDistance;
+        int l = levels.Length;
+        for (int x = edgeDistance; x < maxX; x++)
+        {
+            for (int y = edgeDistance; y < maxY; y++)
+            {
+                bool validPos = true;
+
+                for (int offX = 0; offX < w; offX++)
+                {
+                    for (int offY = 0; offY < h; offY++)
+                    {
+                        int lvl = topology[x + offX, y + offY];
+                        bool coordFound = false;
+                        for (int idL = 0; idL < l; idL++)
+                        {
+                            if (lvl == levels[idL])
+                            {
+                                coordFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!coordFound)
+                        {
+                            validPos = false;
+                            break;
+                        }
+                    }
+
+                    if (!validPos)
+                    {
+                        break;
+                    }
+                }
+
+                if (validPos)
+                {
+                    yield return new GridRect(x, y, w, h);
+                }
+            }
+        }
+    }
+
+    public Vector3 GridPositionToWorld(GridPos pos)
+    {
+        return transform.TransformPoint(new Vector3(0.5f + pos.x - planarOffset.x, heightScale * topology[pos.x, pos.y], 0.5f + pos.y - planarOffset.z));
+    }
+
+    public Vector3 GridRectToWorld(GridRect gridRect)
+    {
+        return (GridPositionToWorld(gridRect.min) + GridPositionToWorld(gridRect.max)) / 2f;
+    }
 
     void Start() {
 
@@ -115,7 +233,7 @@ public class StepTiler : MonoBehaviour {
         float seedSpace = 100000f;
         seedA = new Vector2(Random.value * seedSpace, Random.value * seedSpace);
         seedB = new Vector2(Random.value * seedSpace, Random.value * seedSpace);
-        Generate();
+        Generate();        
     }
 
     public void Generate() {
@@ -146,6 +264,11 @@ public class StepTiler : MonoBehaviour {
         if (groundGenerationType == GroundGenerationType.Mesh)
         {
             CreateMeshFromTopology();
+        }
+
+        if (OnNewWorld != null)
+        {
+            OnNewWorld(this);
         }
     }
 

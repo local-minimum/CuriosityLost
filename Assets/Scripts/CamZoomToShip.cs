@@ -19,9 +19,21 @@ public class CamZoomToShip : MonoBehaviour {
     [SerializeField]
     float preZoomPause = 0.25f;
 
-	void Start () {
-		ZoomIn();
+    static CamZoomToShip _instance;
+
+    public static void Zoom()
+    {
+        _instance.ZoomIn();
+    }
+
+	void Awake () {
+        _instance = this;
 	}
+
+    void OnDestroy()
+    {
+        _instance = null;
+    }
 
     public void ZoomIn()
     {
