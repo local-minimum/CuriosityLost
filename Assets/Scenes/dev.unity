@@ -182,6 +182,7 @@ GameObject:
   m_Component:
   - component: {fileID: 129777250}
   - component: {fileID: 129777249}
+  - component: {fileID: 129777251}
   m_Layer: 0
   m_Name: spacer
   m_TagString: Untagged
@@ -237,6 +238,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &129777251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 129777248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb940abf4ba91774c8db1756fcd58639, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkCycle:
+  - {fileID: 21300000, guid: cb3f5d074dc013243a7cb9cd302e5f02, type: 3}
+  - {fileID: 21300000, guid: 8bb8ddcc115694e4eb358047b14492f5, type: 3}
+  standingCycle:
+  - {fileID: 21300000, guid: cb3f5d074dc013243a7cb9cd302e5f02, type: 3}
+  investigateCycle:
+  - {fileID: 21300000, guid: cb3f5d074dc013243a7cb9cd302e5f02, type: 3}
+  jumpCycle:
+  - {fileID: 21300000, guid: 8bb8ddcc115694e4eb358047b14492f5, type: 3}
+  walkMask:
+    serializedVersion: 2
+    m_Bits: 256
+  animationSpeed: 0.3
+  disembarkmentDelay: 1.56
+  walkSpeed: 1
 --- !u!1 &273117244
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,7 +570,8 @@ GameObject:
   - component: {fileID: 668401456}
   - component: {fileID: 668401455}
   - component: {fileID: 668401457}
-  m_Layer: 5
+  - component: {fileID: 668401458}
+  m_Layer: 8
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -625,6 +653,18 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
+--- !u!65 &668401458
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 668401454}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &711500873
 GameObject:
   m_ObjectHideFlags: 0
@@ -805,6 +845,7 @@ MonoBehaviour:
   allowedHeights: ffffffff
   offset: {x: 0.1, y: 0.4, z: 0.1}
   edgePadding: 10
+  disembarkmentOffset: {x: 0.4, y: -0.55}
 --- !u!1 &1108131270
 GameObject:
   m_ObjectHideFlags: 0

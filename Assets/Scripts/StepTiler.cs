@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public struct GridPos
 {
     public int x;
@@ -12,8 +13,19 @@ public struct GridPos
         this.x = x;
         this.y = y;
     }
+
+    static public explicit operator Vector3(GridPos pos)
+    {
+        return new Vector3(pos.x, 0, pos.y);
+    }
+
+    static public explicit operator Vector2(GridPos pos)
+    {
+        return new Vector3(pos.x, pos.y);
+    }
 }
 
+[System.Serializable]
 public struct GridRect
 {
     public GridPos min;
@@ -24,6 +36,14 @@ public struct GridRect
         min = new GridPos(minX, minY);
         max = new GridPos(minX + w, minY + h);
     }
+
+    public Vector2 Center
+    {
+        get
+        {
+            return ((Vector2)min + (Vector2)max) * 0.5f;
+        }
+    }
 }
 
 public enum GroundGenerationType { Mesh, TiledPrefabs};
@@ -31,6 +51,19 @@ public enum GroundGenerationType { Mesh, TiledPrefabs};
 public delegate void WorldGenerated(StepTiler world);
 
 public class StepTiler : MonoBehaviour {
+
+    static StepTiler _instance;
+    public static StepTiler instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<StepTiler>();
+            }
+            return _instance;
+        }
+    }
 
     public static event WorldGenerated OnNewWorld;
 
@@ -193,9 +226,23 @@ public class StepTiler : MonoBehaviour {
         return transform.TransformPoint(new Vector3(0.5f + pos.x - planarOffset.x, heightScale * topology[pos.x, pos.y], 0.5f + pos.y - planarOffset.z));
     }
 
+    public Vector3 GridPositionToWorld(Vector2 pos)
+    {
+        //SmarterThingy for handlng jumps needed
+        float top = topology[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y)];
+
+        return transform.TransformPoint(new Vector3(pos.x - planarOffset.x, heightScale * top, pos.y - planarOffset.z));
+    }
+
     public Vector3 GridRectToWorld(GridRect gridRect)
     {
         return (GridPositionToWorld(gridRect.min) + GridPositionToWorld(gridRect.max)) / 2f;
+    }
+
+    public Vector2 WorldToFloatPosition(Vector3 world)
+    {
+        Vector3 pos = transform.InverseTransformPoint(world);
+        return new Vector2(pos.x + planarOffset.x, pos.z + planarOffset.z);
     }
 
     void Start() {
@@ -203,6 +250,8 @@ public class StepTiler : MonoBehaviour {
         SetupMesh();
         Reseed();        
     }
+
+    BoxCollider bCollider;
 
     void SetupMesh()
     {
@@ -215,6 +264,7 @@ public class StepTiler : MonoBehaviour {
             mFilt.mesh = mesh;
 
             AddIfNotPresent<MeshRenderer>();
+            bCollider = GetComponent<BoxCollider>();
         }
     }
 
@@ -339,6 +389,11 @@ public class StepTiler : MonoBehaviour {
         mesh.uv = uv;
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
+
+        if (bCollider)
+        {
+            bCollider.size = new Vector3(worldSize, 1, worldSize);
+        }
         
     }
 
