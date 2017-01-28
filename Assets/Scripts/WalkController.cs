@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum SpacerMode {Standing, Walking, Jumping, Investigating};
+public delegate void Disembark();
 
 public class WalkController : MonoBehaviour {
+
+    public event Disembark OnDisembark;
 
     WorldEntity worldEntity;
 
@@ -82,7 +85,12 @@ public class WalkController : MonoBehaviour {
         SetSpacerMode(SpacerMode.Standing);   
         SetCharacterPosition();
 
-        sRend.enabled = true;        
+        sRend.enabled = true;  
+        
+        if (OnDisembark != null)
+        {
+            OnDisembark();
+        }      
     }
 
     void SetCharacterPosition()
