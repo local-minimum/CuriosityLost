@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CamSpacer : MonoBehaviour {
 
-
     [SerializeField]
     Transform planet;
 
@@ -66,6 +65,7 @@ public class CamSpacer : MonoBehaviour {
         Vector3 entityPos = player.transform.position;
         Vector3 target = new Vector3(entityPos.x, camElevation, entityPos.z);
         Vector3 start = transform.position;
+        target = (target - start) * 1.1f + start;
         animating = true;
         float t = Time.timeSinceLevelLoad;
         float progress = 0;
