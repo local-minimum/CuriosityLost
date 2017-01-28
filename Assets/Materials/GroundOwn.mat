@@ -93,10 +93,10 @@ Material:
       second: 1
     - first:
         name: _HeightColorMax
-      second: 5
+      second: 2
     - first:
         name: _HeightColorMin
-      second: -1
+      second: -0.4
     - first:
         name: _Metallic
       second: 0.062
@@ -133,13 +133,13 @@ Material:
       second: {r: 1, g: 1, b: 1, a: 1}
     - first:
         name: _ColorHigh
-      second: {r: 0.6541414, g: 0.8014706, b: 0.679543, a: 1}
+      second: {r: 0.66619813, g: 0.89705884, b: 0.7060017, a: 1}
     - first:
         name: _ColorLow
       second: {r: 0.27205884, g: 0.07201558, b: 0.13409795, a: 1}
     - first:
         name: _ColorZero
-      second: {r: 0.122242644, g: 0.80089986, b: 0.97794116, a: 1}
+      second: {r: 0.49124134, g: 0.55067265, b: 0.5661765, a: 1}
     - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}
