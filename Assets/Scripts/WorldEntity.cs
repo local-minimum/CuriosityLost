@@ -12,6 +12,8 @@ public class WorldEntity : MonoBehaviour {
     [Range(1, 10)]
     public int size = 1;
 
+    public bool blockingTile;
+
     void OnDrawGizmos()
     {
         if (showWorldGizmo)

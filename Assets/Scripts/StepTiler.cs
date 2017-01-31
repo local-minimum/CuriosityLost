@@ -126,6 +126,21 @@ public class StepTiler : MonoBehaviour {
 
     Vector3 planarOffset;
     int[,] topology;
+    bool[,] occupancy;
+
+    public void Occupy(GridRect gRect)
+    {
+        GridPos min = gRect.min;
+        GridPos max = gRect.max;
+
+        for (int x=min.x; x<max.x; x++)
+        {
+            for (int y=min.y; y<max.y; y++)
+            {
+                occupancy[x, y] = true;
+            }
+        }
+    }
 
     public IEnumerable<GridRect> GetAllPositions(int w, int h, params int[] levels)
     {
@@ -143,16 +158,19 @@ public class StepTiler : MonoBehaviour {
                     for (int offY=0; offY< h; offY++)
                     {
                         int lvl = topology[x + offX, y + offY];
-                        bool coordFound = false;    
-                        for (int idL = 0; idL< l; idL++)
+                        bool coordFound = false;
+
+                        if (!occupancy[x + offX, y + offY])
                         {
-                            if (lvl == levels[idL])
+                            for (int idL = 0; idL < l; idL++)
                             {
-                                coordFound = true;
-                                break;
+                                if (lvl == levels[idL])
+                                {
+                                    coordFound = true;
+                                    break;
+                                }
                             }
                         }
-
                         if (!coordFound)
                         {
                             validPos = false;
@@ -191,15 +209,17 @@ public class StepTiler : MonoBehaviour {
                     {
                         int lvl = topology[x + offX, y + offY];
                         bool coordFound = false;
-                        for (int idL = 0; idL < l; idL++)
+                        if (!occupancy[x + offX, y + offY])
                         {
-                            if (lvl == levels[idL])
+                            for (int idL = 0; idL < l; idL++)
                             {
-                                coordFound = true;
-                                break;
+                                if (lvl == levels[idL])
+                                {
+                                    coordFound = true;
+                                    break;
+                                }
                             }
                         }
-
                         if (!coordFound)
                         {
                             validPos = false;
@@ -236,7 +256,8 @@ public class StepTiler : MonoBehaviour {
 
     public Vector3 GridRectToWorld(GridRect gridRect)
     {
-        return (GridPositionToWorld(gridRect.min) + GridPositionToWorld(gridRect.max)) / 2f;
+        Vector3 pos = (GridPositionToWorld(gridRect.min) + GridPositionToWorld(gridRect.max));
+        return pos / 2f;
     }
 
     public Vector2 WorldToFloatPosition(Vector3 world)
@@ -360,7 +381,9 @@ public class StepTiler : MonoBehaviour {
             for (int y = 0; y < worldSize; y++)
             {
                 float elevation = GetElevation(x, y);                
+
                 topology[x, y] = Mathf.RoundToInt(elevation);
+                occupancy[x, y] = false;
 
                 if (groundGenerationType == GroundGenerationType.TiledPrefabs)
                 {
@@ -391,6 +414,7 @@ public class StepTiler : MonoBehaviour {
         {
             planarOffset = new Vector3(worldSize / 2f, 0, worldSize / 2f);
             topology = new int[worldSize, worldSize];
+            occupancy = new bool[worldSize, worldSize];
         }
     }
 
