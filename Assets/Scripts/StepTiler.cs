@@ -245,6 +245,69 @@ public class StepTiler : MonoBehaviour {
         return new Vector2(pos.x + planarOffset.x, pos.z + planarOffset.z);
     }
 
+    public float WorldPosHeight(Vector3 pos)
+    {
+        Vector3 localPos = transform.InverseTransformPoint(pos);
+        try
+        {
+            return heightScale * topology[(int)(localPos.x + planarOffset.x), (int)(localPos.z + planarOffset.z)];
+        } catch (System.IndexOutOfRangeException)
+        {
+            return 0f;
+        }
+    }
+
+    public Bounds GridWithSizeToWorldBounds(Vector2 center, int size, bool rounded=false)
+    {
+        Vector2 min = center - Vector2.one * size / 2f;
+        Vector2 max = center + Vector2.one * size / 2f;
+
+        if (rounded)
+        {
+            min.x = Mathf.Floor(min.x);
+            min.y = Mathf.Floor(min.y);
+            max.x = Mathf.Ceil(max.x);
+            max.y = Mathf.Ceil(max.y);
+        }
+
+        int x0 = (int) min.x;
+        int x1 = (int) max.x;
+        int y0 = (int) min.y;
+        int y1 = (int) max.y;
+
+        int min_height = 0;
+        if (x0 >= 0 && x0 < topology.GetLength(0) && y0 >= 0 && y0 < topology.GetLength(1))
+        {
+            min_height = topology[x0, y0];
+        } else if (x1 >= 0 && x1 < topology.GetLength(0) && y1 >= 0 && y1 < topology.GetLength(1))
+        {
+            min_height = topology[x1, y1];
+        }
+
+        int max_height = min_height;
+
+        for (int x=x0; x<x1; x++)
+        {
+            for (int y=y0; y<y1; y++)
+            {
+                int v = topology[x, y];
+                if (v < min_height)
+                {
+                    min_height = v;
+                } else if (v > max_height)
+                {
+                    max_height = v;
+                }
+            }
+        }
+
+        Vector3 minPos = transform.TransformPoint(new Vector3(min.x - planarOffset.x, heightScale * min_height, min.y - planarOffset.z));
+        Vector3 maxPos = transform.TransformPoint(new Vector3(max.x - planarOffset.x, heightScale * max_height, max.y -  planarOffset.z));
+
+        return new Bounds((maxPos + minPos) / 2f, maxPos - minPos);
+        
+    }
+
     void Start() {
 
         SetupMesh();

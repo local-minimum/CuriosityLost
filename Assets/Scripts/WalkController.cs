@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum SpacerMode {Standing, Walking, Jumping, Investigating};
+public delegate void Disembark();
 
 public class WalkController : MonoBehaviour {
+
+    public event Disembark OnDisembark;
+
+    WorldEntity worldEntity;
 
     [SerializeField]
     Sprite[] walkCycle;
@@ -37,9 +42,13 @@ public class WalkController : MonoBehaviour {
     [SerializeField, Range(0, 2)]
     float disembarkmentDelay;
 
+    [SerializeField]
+    Transform feetPosition;
+
     void Awake()
     {
         ship = SpaceShip.ship;
+        worldEntity = GetComponent<WorldEntity>();
     }
 
     void Start()
@@ -67,23 +76,28 @@ public class WalkController : MonoBehaviour {
         }
     }
 
-    Vector2 characterCoordinate;
-
     IEnumerator<WaitForSeconds> Disembark()
     {
         yield return new WaitForSeconds(disembarkmentDelay);
 
-        characterCoordinate = ship.disembarkmentOffset + ship.landingSpot.Center;
+        worldEntity.gridPosition = ship.disembarkmentOffset + ship.landingSpot.Center;
 
         SetSpacerMode(SpacerMode.Standing);   
         SetCharacterPosition();
 
-        sRend.enabled = true;        
+        sRend.enabled = true;  
+        
+        if (OnDisembark != null)
+        {
+            OnDisembark();
+        }      
     }
 
     void SetCharacterPosition()
     {
-        transform.position = ship.planet.GridPositionToWorld(characterCoordinate) + Vector3.up * heightOverGround;
+        Vector3 pos = ship.planet.GridPositionToWorld(worldEntity.gridPosition);
+        pos.y = ship.planet.WorldPosHeight(feetPosition.position);
+        transform.position = pos + Vector3.up * heightOverGround;
     }
 
     void SetSprite() {
@@ -147,7 +161,7 @@ public class WalkController : MonoBehaviour {
             if (Physics.Raycast(r, out hit, 100, walkMask))
             {
                 walkTarget = ship.planet.WorldToFloatPosition(hit.point);
-                proximityThreshold = (walkTarget - characterCoordinate).magnitude * .15f;
+                proximityThreshold = (walkTarget - worldEntity.gridPosition).magnitude * .15f;
                 if (proximityThreshold < 5)
                 {
                     proximityThreshold = 0.01f;
@@ -159,19 +173,19 @@ public class WalkController : MonoBehaviour {
 
         if (spacerMode == SpacerMode.Walking)
         {
-            float delta = (walkTarget - characterCoordinate).magnitude;
+            float delta = (walkTarget - worldEntity.gridPosition).magnitude;
             if (delta < proximityThreshold)
             {
                 SetSpacerMode(SpacerMode.Standing);
             } else
             {
-                Vector2 direction = (walkTarget - characterCoordinate).normalized;
+                Vector2 direction = (walkTarget - worldEntity.gridPosition).normalized;
                 Vector2 walk = direction * walkSpeed * Time.deltaTime;
                 if (walk.magnitude > delta)
                 {
                     walk = walk.normalized * delta;
                 }
-                characterCoordinate += walk;
+                worldEntity.gridPosition += walk;
                 SetCharacterPosition();
             }
         }
