@@ -45,14 +45,21 @@ public class WalkController : MonoBehaviour {
     [SerializeField]
     Transform feetPosition;
 
+    Collider col;
+
+    [SerializeField]
+    LayerMask discoverableCasting;
+
     void Awake()
     {
         ship = SpaceShip.ship;
         worldEntity = GetComponent<WorldEntity>();
+        
     }
 
     void Start()
     {
+        col = GetComponent<Collider>();
         sRend = GetComponent<SpriteRenderer>();
         sRend.enabled = false;
         SetIsAnimated();        
@@ -194,6 +201,47 @@ public class WalkController : MonoBehaviour {
         {
             SetSprite();
         }
+
+        if (EnterDiscoverable() && !selectedDiscoverable.discovered)
+        {
+            MessageBar.instance.Prompt("INVESTIGATE?");
+        }
+    }
+
+    Discoverable selectedDiscoverable = null;
+
+    bool EnterDiscoverable()
+    {
+        Bounds b = col.bounds;
+        Collider[] overlaps = Physics.OverlapBox(b.center, b.size / 2f, Quaternion.identity, discoverableCasting);
+        Discoverable firstFound = null;
+
+        for (int i=0; i<overlaps.Length; i++)
+        {
+            Discoverable tmp = overlaps[i].GetComponent<Discoverable>();
+            if (tmp == null)
+            {
+                continue;
+            }
+
+            if (selectedDiscoverable == null)
+            {
+                selectedDiscoverable = tmp;
+                return true;
+            } else if (selectedDiscoverable == tmp)
+            {
+                return false;
+            } else if (firstFound == null)
+            {
+                firstFound = tmp;
+            }
+        }
+        if (firstFound == null && selectedDiscoverable != null && !selectedDiscoverable.discovered && !MessageBar.instance.showing)
+        {
+            MessageBar.instance.Prompt("YEAH LETS NOT...");
+        }
+        selectedDiscoverable = firstFound;
+        return firstFound != null;
     }
 
     void SetIsAnimated()
