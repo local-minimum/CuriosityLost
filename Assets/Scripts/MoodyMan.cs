@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public delegate void MoodChange(float mood);
+
 public class MoodyMan : MonoBehaviour {
+
+    public event MoodChange OnMoodChange;
 
     int index = -1;
 
@@ -71,6 +75,10 @@ public class MoodyMan : MonoBehaviour {
     {
         mood = Mathf.Clamp01(mood + delta);
         vigorEffects.vigor = mood;
+        if (OnMoodChange != null)
+        {
+            OnMoodChange(mood);
+        }
     }
 
     void Update () {

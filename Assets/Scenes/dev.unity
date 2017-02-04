@@ -418,8 +418,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 0
   investigationBonus: 0.4
-  decaySpeedMoving: -0.01
-  decaySpeedStaning: -0.001
+  decaySpeedMoving: -0.0075
+  decaySpeedStaning: -0.0025
+  vigorEffects: {fileID: 2111902990}
 --- !u!1 &273117244
 GameObject:
   m_ObjectHideFlags: 0

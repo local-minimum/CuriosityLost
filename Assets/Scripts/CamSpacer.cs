@@ -13,6 +13,8 @@ public class CamSpacer : MonoBehaviour {
     [SerializeField]
     Rect stationaryRelativeScreenRect;
 
+    Rect currentStationaryRelativeScreenRect;
+
     [SerializeField]
     AnimationCurve transition;
 
@@ -28,6 +30,13 @@ public class CamSpacer : MonoBehaviour {
 
     bool animating = false;
 
+    MoodyMan moodyCtrl;
+
+    void Awake()
+    {
+        moodyCtrl = player.GetComponent<MoodyMan>();
+        currentStationaryRelativeScreenRect = stationaryRelativeScreenRect;
+    }
     private void Start()
     {
         cam = GetComponent<Camera>();
@@ -36,11 +45,21 @@ public class CamSpacer : MonoBehaviour {
     private void OnEnable()
     {
         player.OnDisembark += DisembarkHandler;
+        moodyCtrl.OnMoodChange += CamSpacer_OnMoodChange;
     }
 
     private void OnDisable()
     {
         player.OnDisembark -= DisembarkHandler;
+        moodyCtrl.OnMoodChange -= CamSpacer_OnMoodChange;
+    }
+
+    private void CamSpacer_OnMoodChange(float mood)
+    {
+        currentStationaryRelativeScreenRect.x = Mathf.Lerp(stationaryRelativeScreenRect.x, 0.49f, 1 - mood);
+        currentStationaryRelativeScreenRect.y = Mathf.Lerp(stationaryRelativeScreenRect.y, 0.49f, 1 - mood);
+        currentStationaryRelativeScreenRect.width = 1f - currentStationaryRelativeScreenRect.x * 2f;
+        currentStationaryRelativeScreenRect.height = 1f - currentStationaryRelativeScreenRect.y * 2f;
     }
 
     private void DisembarkHandler()
@@ -53,7 +72,7 @@ public class CamSpacer : MonoBehaviour {
 		if (tracking)
         {
             Vector2 pos = cam.WorldToViewportPoint(player.transform.position);
-            if (!stationaryRelativeScreenRect.Contains(pos))
+            if (!currentStationaryRelativeScreenRect.Contains(pos))
             {
                 StartCoroutine(animateCamTransition());
             }
