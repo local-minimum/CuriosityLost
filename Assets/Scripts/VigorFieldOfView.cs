@@ -76,52 +76,34 @@ public class VigorFieldOfView : MonoBehaviour {
 
         float xOptimum = (halfWidth - maxBlockStillFreeHalf) * (1 - vigorEffect);
         float yOptimum = (halfHeight - maxBlockStillFreeHalf) * (1 - vigorEffect);
-
+        
         int leftOn = Mathf.FloorToInt(xOptimum);
-        int rightOn = w - leftOn;
+        int rightOn = w - leftOn - 1;
         int bottomOn = Mathf.FloorToInt(yOptimum);
-        int topOn = h - bottomOn;
+        int topOn = h - bottomOn - 1;        
 
         int leftOff = Mathf.CeilToInt(xOptimum);
-        int rightOff = w - leftOff;
-        if (leftOff == leftOn)
-        {
-            leftOn--;
-        }
-        if (rightOff == rightOn)
-        {
-            rightOff--;
-        }
+        int rightOff = w - leftOff - 1;
 
         int bottomOff = Mathf.CeilToInt(yOptimum);
-        int topOff = h - bottomOff;
-        if (bottomOff == bottomOn)
-        {
-            bottomOn--;
-        }
-        if (topOff == topOn)
-        {
-            topOff--;
-        }
+        int topOff = h - bottomOff - 1;
 
         int stepSizeMiddleOff = Mathf.CeilToInt(((xOptimum - Mathf.Floor(xOptimum)) + (yOptimum - Mathf.Floor(yOptimum))) / .2f) + 3;
         int steps = 0;
 
         for (int x=0; x< w; x++)
         {
+            bool xOff = x > leftOff && x < rightOff;
+            int deltaX = xOff ? 0 : Mathf.Min(Mathf.Abs(x - leftOn), Mathf.Abs(x - rightOn));
+            
             for (int y=0; y< h; y++)
             {
-                if (x <= leftOn || x >= rightOn || y >= topOn || y <= bottomOn)
-                {
-                    coverTex.SetPixel(x, y, onColor);
-                } else if (x > leftOff && x < rightOff && y > bottomOff && y < topOff)
-                {
-                    coverTex.SetPixel(x, y, offColor);
-                } else
-                {
-                    steps++;
-                    coverTex.SetPixel(x, y, steps % stepSizeMiddleOff == 0 ? offColor : onColor);
-                }
+                bool yOff = y > bottomOff && y < topOff;
+                int deltaY = yOff ? 0 : Mathf.Min(Mathf.Abs(y - bottomOn), Mathf.Abs(y - topOn));
+
+                steps++;
+                coverTex.SetPixel(x, y, 0.25f > (1f - vigorEffect) * (2 * deltaY + 2 * deltaX) ? offColor : onColor);
+                
             }
         }
         coverTex.Apply();

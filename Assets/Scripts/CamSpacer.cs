@@ -69,7 +69,7 @@ public class CamSpacer : MonoBehaviour {
     }
 
     void Update () {
-		if (tracking)
+		if (tracking && !animating)
         {
             Vector2 pos = cam.WorldToViewportPoint(player.transform.position);
             if (!currentStationaryRelativeScreenRect.Contains(pos))

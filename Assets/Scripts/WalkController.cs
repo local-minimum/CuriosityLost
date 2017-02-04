@@ -200,7 +200,8 @@ public class WalkController : MonoBehaviour {
                 SetSpacerMode(SpacerMode.Standing);
             } else
             {
-                Vector2 direction = (walkTarget - worldEntity.gridPosition).normalized;
+                Vector2 direction = WalkDirection;                
+
                 Vector2 walk = direction * walkSpeed * Time.deltaTime;
                 if (walk.magnitude > delta)
                 {
@@ -219,6 +220,43 @@ public class WalkController : MonoBehaviour {
         if (EnterDiscoverable() && !selectedDiscoverable.discovered)
         {
             MessageBar.instance.Prompt("INVESTIGATE?");
+        }
+    }
+
+    [SerializeField]
+    LayerMask obstacleCasting;
+
+    Vector2 WalkDirection
+    {
+        get
+        {
+            Vector2 direction = (walkTarget - worldEntity.gridPosition).normalized;
+            Bounds b = col.bounds;
+            Collider[] overlaps = Physics.OverlapBox(b.center, b.size / 2f, Quaternion.identity, obstacleCasting);
+            for (int i = 0; i < overlaps.Length; i++)
+            {
+                WorldEntity we = overlaps[i].GetComponent<WorldEntity>();
+                if (we == null || we.blockingTile)
+                {
+                    Vector3 oCenter = overlaps[i].transform.position - transform.position;
+                    Vector2 oDirection = new Vector2(oCenter.x, oCenter.z).normalized;
+                    float turnMagnitude = Vector2.Dot(direction, oDirection);
+                    if (turnMagnitude > 0)
+                    {
+                        Vector2 delta = direction - oDirection;
+                        if (turnMagnitude == 1f)
+                        {
+                            delta = new Vector2(direction.y, direction.x * (Random.value < 0.5f ? -1f : 1f));
+                        }
+                        else
+                        {
+                            delta = delta.normalized;
+                        }
+                        direction = (direction + (delta * turnMagnitude)).normalized;
+                    }
+                }
+            }
+            return direction;
         }
     }
 

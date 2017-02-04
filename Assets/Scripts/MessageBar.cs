@@ -72,7 +72,10 @@ public class MessageBar : MonoBehaviour {
         textField.enabled = false;  
         anim.SetTrigger(foldOutTrigger);
         yield return new WaitForSeconds(duration);
-        anim.SetTrigger(foldInTrigger);
+        if (textField.text == message)
+        {
+            anim.SetTrigger(foldInTrigger);
+        }
         _showing = false;    
     }
 }

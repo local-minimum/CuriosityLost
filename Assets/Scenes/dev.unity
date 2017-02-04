@@ -346,6 +346,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   walkSpeed: 1
+  obstacleCasting:
+    serializedVersion: 2
+    m_Bits: 1536
 --- !u!114 &129777252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -469,7 +472,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.053, g: 0.053, b: 0.053, a: 0.959}
+  m_Color: {r: 0.053, g: 0.053, b: 0.053, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -501,7 +504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79bf84aeb3e15c74da5de2ec94527db7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockSize: 8
+  blockSize: 6
   vigorEffect: 1
   maxBlockStillFreeHalf: 4
 --- !u!1 &293258924
@@ -979,7 +982,8 @@ GameObject:
   - component: {fileID: 1036710495}
   - component: {fileID: 1036710497}
   - component: {fileID: 1036710498}
-  m_Layer: 0
+  - component: {fileID: 1036710499}
+  m_Layer: 10
   m_Name: spaceship
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1065,7 +1069,19 @@ MonoBehaviour:
   showWorldGizmo: 0
   gridPosition: {x: 0, y: 0}
   size: 1
-  blockingTile: 0
+  blockingTile: 1
+--- !u!65 &1036710499
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1036710494}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 7.5799994, y: 7.1600018, z: 0.20000005}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1108131270
 GameObject:
   m_ObjectHideFlags: 0
