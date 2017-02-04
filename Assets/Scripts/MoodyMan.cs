@@ -61,13 +61,29 @@ public class MoodyMan : MonoBehaviour {
     {
         if (mode == SpacerMode.Investigating)
         {
-            UpdateMood(investigationBonus * decayCurve.Evaluate(mood));
+            StartCoroutine(Rejuvinate(investigationBonus * decayCurve.Evaluate(mood)));
         } else if (mode == SpacerMode.Jumping || mode == SpacerMode.Walking)
         {
             isMoving = true;
         } else
         {
             isMoving = false;
+        }
+    }
+
+    [SerializeField]
+    float rejuvinationSpeed = 0.1f;
+
+    [SerializeField]
+    float rejuvinationSteps = 40;
+
+    IEnumerator<WaitForSeconds> Rejuvinate(float amount)
+    {
+        float stepRejuve = amount / rejuvinationSteps;
+        for (int i=0; i<rejuvinationSteps; i++)
+        {
+            UpdateMood(stepRejuve);
+            yield return new WaitForSeconds(rejuvinationSpeed);
         }
     }
 
