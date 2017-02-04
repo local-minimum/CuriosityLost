@@ -4,9 +4,11 @@ using UnityEngine;
 
 public enum SpacerMode {Standing, Walking, Jumping, Investigating};
 public delegate void Disembark();
+public delegate void ModeChange(SpacerMode mode);
 
 public class WalkController : MonoBehaviour {
 
+    public event ModeChange OnModeChange;
     public event Disembark OnDisembark;
 
     WorldEntity worldEntity;
@@ -165,7 +167,19 @@ public class WalkController : MonoBehaviour {
         {
             Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if (Physics.Raycast(r, out hit, 100, walkMask))
+            bool doInvestigate = false;
+            if (Physics.Raycast(r, out hit, 100, discoverableCasting))
+            {
+                if (selectedDiscoverable == hit.transform.GetComponent<Discoverable>())
+                {
+                    doInvestigate = true;
+                    SetSpacerMode(SpacerMode.Investigating);
+                    selectedDiscoverable.Investigate();
+                    selectedDiscoverable = null;
+                }
+            }
+
+            if (!doInvestigate && Physics.Raycast(r, out hit, 100, walkMask))
             {
                 walkTarget = ship.planet.WorldToFloatPosition(hit.point);
                 proximityThreshold = (walkTarget - worldEntity.gridPosition).magnitude * .15f;
@@ -273,6 +287,11 @@ public class WalkController : MonoBehaviour {
         spacerMode = mode;
         animationStart = Time.timeSinceLevelLoad;
         SetIsAnimated();
-        SetSprite();        
+        SetSprite();
+        
+        if (OnModeChange != null)
+        {
+            OnModeChange(mode);
+        }
     }
 }

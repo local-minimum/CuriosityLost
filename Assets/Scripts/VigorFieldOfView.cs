@@ -15,6 +15,14 @@ public class VigorFieldOfView : MonoBehaviour {
     [SerializeField, Range(0, 1)]
     float vigorEffect = 1;
 
+    public float vigor
+    {
+        set
+        {
+            vigorEffect = Mathf.Clamp01(value);
+        }
+    }
+
     [SerializeField]
     int maxBlockStillFreeHalf = 4;
 

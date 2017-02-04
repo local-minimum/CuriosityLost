@@ -15,6 +15,14 @@ public class VigorBar : MonoBehaviour {
 
     Vector2 sizeDelta;
 
+    public float vigor
+    {
+        set
+        {
+            vigorEffect = Mathf.Clamp01(value);
+        }
+    }
+
 	void Start () {
         sizeDelta = (transform as RectTransform).sizeDelta;
         fullSize = sizeDelta.x;

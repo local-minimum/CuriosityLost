@@ -14,5 +14,8 @@ public class Discoverable : MonoBehaviour {
         worldEntity = GetComponent<WorldEntity>();
 	}
 	
+    public void Investigate() {
+        discovered = true;
+    }
 
 }
