@@ -31,9 +31,15 @@ public class VigorFieldOfView : MonoBehaviour {
         SetupSprite();
 	}
 
+    int sWidth;
+    int sHeight;
+
     void SetupSprite()
     {
-        coverTex = new Texture2D(Screen.width, Screen.height);
+        sWidth = Screen.width;
+        sHeight = Screen.height;
+
+        coverTex = new Texture2D(Screen.width / blockSize, Screen.height / blockSize);
         coverTex.filterMode = FilterMode.Point;
         coverSprite = Sprite.Create(coverTex, new Rect(0, 0, coverTex.width, coverTex.height), Vector2.one * 0.5f);
         coverSprite.name = "Dynamic Cover Sprite";
@@ -45,7 +51,7 @@ public class VigorFieldOfView : MonoBehaviour {
     {
         get
         {
-            return Screen.width == coverTex.width && Screen.height == coverTex.height;
+            return Screen.width == sWidth && Screen.height == sHeight;
         }
     }
 
