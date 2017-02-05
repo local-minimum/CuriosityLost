@@ -52,10 +52,13 @@ public class WalkController : MonoBehaviour {
     [SerializeField]
     LayerMask discoverableCasting;
 
+    SelectController selectController;
+
     void Awake()
     {
         ship = SpaceShip.ship;
         worldEntity = GetComponent<WorldEntity>();
+        selectController = GetComponent<SelectController>();
         
     }
 
@@ -176,6 +179,7 @@ public class WalkController : MonoBehaviour {
                     SetSpacerMode(SpacerMode.Investigating);
                     selectedDiscoverable.Investigate();
                     selectedDiscoverable = null;
+                    selectController.ClickItem(hit.transform.gameObject);
                 }
             }
 
@@ -188,6 +192,7 @@ public class WalkController : MonoBehaviour {
                     proximityThreshold = 0.01f;
                 }
                 SetSpacerMode(SpacerMode.Walking);
+                selectController.ClickLocation(hit.point);
 
             }
         }
