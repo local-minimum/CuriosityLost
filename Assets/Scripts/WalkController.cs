@@ -178,8 +178,8 @@ public class WalkController : MonoBehaviour {
                     doInvestigate = true;
                     SetSpacerMode(SpacerMode.Investigating);
                     selectedDiscoverable.Investigate();
+                    selectController.ClickItem(selectController.gameObject);
                     selectedDiscoverable = null;
-                    selectController.ClickItem(hit.transform.gameObject);
                 }
             }
 

@@ -23,7 +23,7 @@ public class SelectController : MonoBehaviour {
 
 	void Start () {
         worldCanvas = selectImage.GetComponentInParent<Canvas>();
-        anim = worldCanvas.GetComponent<Animator>();
+        anim = worldCanvas.GetComponent<Animator>();        
     }
 
     public void ClickLocation(Vector3 pos)
@@ -34,6 +34,8 @@ public class SelectController : MonoBehaviour {
 
     public void ClickItem(GameObject item)
     {
+        //TODO: Bug not grabbing item sprite
+
         SpriteRenderer rend = GetComponent<SpriteRenderer>();
         if (rend)
         {
