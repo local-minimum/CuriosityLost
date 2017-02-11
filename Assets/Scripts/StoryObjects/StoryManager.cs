@@ -22,7 +22,7 @@ public class StoryManager : MonoBehaviour {
 
     private void Story_UI_TextElement_OnChangeRequest(Story_UI_TextElement elem)
     {        
-        elem.textArea.text = options[index];
+        elem.Message = options[index];
         index++;
         index %= options.Length;
     }

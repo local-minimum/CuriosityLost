@@ -15,15 +15,34 @@ public class Story_UI_TextElement : MonoBehaviour {
     public string originalMessage;
 
     Button bgButton;
-    
-    public string Message
+
+    bool _needRalignment = false;
+    public bool NeedRealignment
     {
-        set
-        {            
-            textArea.text = value;                
+        get
+        {
+            return _needRalignment;
         }
     }
 
+    public void Aligned()
+    {
+        _needRalignment = false;
+    }
+
+    public string Message
+    {
+        set
+        {
+
+            if (value != textArea.text)
+            {
+                textArea.text = value;
+                _needRalignment = true;
+            }       
+        }
+    }
+    
     public bool buttonize
     {
         get
@@ -39,9 +58,11 @@ public class Story_UI_TextElement : MonoBehaviour {
                 bgButton.image = bgImage;
                 bgButton.onClick = new Button.ButtonClickedEvent();
                 bgButton.onClick.AddListener(ClickedButton);
+                _needRalignment = true;
 
-            } else if (bgButton != null)
+            } else if (bgButton != null && bgButton.enabled != value)
             {
+                _needRalignment = true;
                 bgButton.enabled = value;
             }
         }
@@ -64,6 +85,7 @@ public class Story_UI_TextElement : MonoBehaviour {
     public bool showBG {
         set
         {
+            _needRalignment = _needRalignment || _showBg != value;
             _showBg = value;
             bgRectTransf.gameObject.SetActive(value);
         }

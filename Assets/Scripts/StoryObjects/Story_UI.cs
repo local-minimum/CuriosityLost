@@ -21,7 +21,7 @@ public class Story_UI : MonoBehaviour {
     }
 
     [SerializeField]
-    Transform fillSpace;
+    RectTransform fillSpace;
 
     List<Story_UI_TextElement> textFields = new List<Story_UI_TextElement>();
 
@@ -61,18 +61,20 @@ public class Story_UI : MonoBehaviour {
     [SerializeField]
     float wordSpacing = 10;
 
+    Vector2 fillSize;
+
     void Start()
     {
         DisplayMessage();
     }
 
+    string _displayedMsg;
+
     public void DisplayMessage()
     {
-        Vector2 off = Vector2.left * 300 + Vector2.up * 10;
-        Vector2 wordSpacing = Vector2.right * this.wordSpacing;
+     
         cachedTextsIndex = 0;
         bool spaceBefore = true;
-        bool inheritPrevActiveBgSetting = false;
 
         foreach (MessagePart mPart in GetMessageInParts())
         {
@@ -96,10 +98,36 @@ public class Story_UI : MonoBehaviour {
                 tElem.originalMessage = mPart.msg;
                 tElem.Message = mPart.msg;
             }
-            
-            tElem.showBG = addBgImage == WordDecoration.All || addBgImage == WordDecoration.Options && modified || inheritPrevActiveBgSetting;
+                        
+        }
 
-            inheritPrevActiveBgSetting = modified && tElem.spaceAfter == false;
+        while (cachedTextsIndex < textFields.Count)
+        {
+            textFields[cachedTextsIndex].gameObject.SetActive(false);
+            cachedTextsIndex++;
+        }
+
+    }
+
+    void Realign()
+    {
+        Vector2 off = Vector2.left * 300 + Vector2.up * 10;
+        Vector2 wordSpacing = Vector2.right * this.wordSpacing;
+        bool inheritPrevActiveBgSetting = false;
+        bool spaceBefore = true;
+        fillSize = fillSpace.sizeDelta;
+
+        foreach (Story_UI_TextElement tElem in textFields)
+        {
+            if (!tElem.gameObject.activeSelf)
+            {
+                break;
+            }
+
+            tElem.showBG = addBgImage == WordDecoration.All || addBgImage == WordDecoration.Options && tElem.buttonize || inheritPrevActiveBgSetting;
+            RectTransform rt = tElem.transform as RectTransform;
+
+            inheritPrevActiveBgSetting = tElem.buttonize && tElem.spaceAfter == false;
 
             if (tElem.showBG)
             {
@@ -115,14 +143,11 @@ public class Story_UI : MonoBehaviour {
                 off += Vector2.right * rt.sizeDelta.x + (tElem.spaceAfter ? wordSpacing : Vector2.zero);
             }
             spaceBefore = tElem.spaceAfter;
-        }
 
-        while (cachedTextsIndex < textFields.Count)
-        {
-            textFields[cachedTextsIndex].gameObject.SetActive(false);
-            cachedTextsIndex++;
+            tElem.Aligned();
         }
     }
+
 
     public bool IsOption(string word, out string match)
     {
@@ -137,6 +162,8 @@ public class Story_UI : MonoBehaviour {
 
     IEnumerable<MessagePart> GetMessageInParts()
     {
+        _displayedMsg = message;
+
         string[] words = message.Split(delimiters.ToCharArray());
         int wordId = 0;
         bool spaceAfter;
@@ -221,8 +248,57 @@ public class Story_UI : MonoBehaviour {
         return go.GetComponent<Story_UI_TextElement>();
     }
 
+    bool NeedToRepartition
+    {
+        get
+        {
+            return _displayedMsg != message;
+        }
+    }
+
+    bool _delayUpdate = false;
+
+    bool NeedRealignment
+    {
+        get
+        {
+            if (_delayUpdate)
+            {
+                _delayUpdate = false;
+                return true;
+            }
+
+            if (fillSize != fillSpace.sizeDelta)
+            {
+                _delayUpdate = true;
+                return false;
+            }
+
+            for (int i = 0, l = textFields.Count; i < l; i++) {
+                if (!textFields[i].gameObject.activeSelf)
+                {
+                    break;
+                }
+                if (textFields[i].NeedRealignment)
+                {
+                    _delayUpdate = true;
+                    return false;
+                }
+            }
+
+            _delayUpdate = false;
+            return false;
+        }
+    }
+
     void Update()
     {
-        DisplayMessage();
+        if (NeedToRepartition)
+        {            
+            DisplayMessage();
+        } else if (NeedRealignment)
+        {            
+            Realign();
+        }
     }
 }
