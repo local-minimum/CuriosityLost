@@ -2030,7 +2030,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 0
   textAnchor: 4
-  message: '{{Test}}'
+  message: '{{Test}} less work on updating'
   textColor: {r: 0.33088237, g: 0.5016226, b: 1, a: 1}
   addBgImage: 1
   bgImage: {fileID: 0}

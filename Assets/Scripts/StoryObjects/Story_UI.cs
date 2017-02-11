@@ -79,7 +79,6 @@ public class Story_UI : MonoBehaviour {
         foreach (MessagePart mPart in GetMessageInParts())
         {
             Story_UI_TextElement t = Get_StoryTextElem(mPart.msg);
-            RectTransform rt = t.transform as RectTransform;
             Story_UI_TextElement tElem = t.GetComponent<Story_UI_TextElement>();
             tElem.spaceAfter = mPart.spaceAfter;
             tElem.spaceBefore = spaceBefore;
@@ -98,7 +97,9 @@ public class Story_UI : MonoBehaviour {
                 tElem.originalMessage = mPart.msg;
                 tElem.Message = mPart.msg;
             }
-                        
+
+            spaceBefore = tElem.spaceAfter;
+
         }
 
         while (cachedTextsIndex < textFields.Count)
@@ -109,13 +110,21 @@ public class Story_UI : MonoBehaviour {
 
     }
 
+    Vector2 wordSpacingV2;
+    Vector2 wordOff;
+    float wordHeight;
+    float lineWidth = 40f;
+    float lineHeightFactor = 1.5f;
+
     void Realign()
     {
-        Vector2 off = Vector2.left * 300 + Vector2.up * 10;
-        Vector2 wordSpacing = Vector2.right * this.wordSpacing;
+        wordSpacingV2 = Vector2.right * this.wordSpacing;
         bool inheritPrevActiveBgSetting = false;
-        bool spaceBefore = true;
-        fillSize = fillSpace.sizeDelta;        
+        fillSize = fillSpace.sizeDelta;
+        wordOff = new Vector2(-Screen.width, Screen.height) / 2f + new Vector2(30, -100);
+        lineWidth = Screen.width * 0.9f;
+        wordHeight = 0;
+        float xOffSource = wordOff.x;
 
         foreach (Story_UI_TextElement tElem in textFields)
         {
@@ -125,29 +134,40 @@ public class Story_UI : MonoBehaviour {
             }
 
             tElem.showBG = addBgImage == WordDecoration.All || addBgImage == WordDecoration.Options && tElem.buttonize || inheritPrevActiveBgSetting;
-            RectTransform rt = tElem.transform as RectTransform;
 
             inheritPrevActiveBgSetting = tElem.buttonize && tElem.spaceAfter == false;
 
-            if (tElem.showBG)
-            {
-                off -= Vector2.right * (tElem.spaceBefore ? paddingLeftBottom.x : 0);
-                rt.localPosition = off;
-                tElem.bgRectTransf.offsetMin = new Vector2(tElem.spaceBefore ? paddingLeftBottom.x : 0, paddingLeftBottom.y);
-                tElem.bgRectTransf.offsetMax = new Vector2(tElem.spaceAfter ? paddingRightTop.x : 0, paddingRightTop.y);
-                off += Vector2.right * (rt.sizeDelta.x + (tElem.spaceAfter ? paddingRightTop.x : 0)) + (tElem.spaceAfter ? wordSpacing : Vector2.zero);
+            AlignElement(tElem);
+            if (Mathf.Abs(wordOff.x - xOffSource)  > lineWidth){
+                wordOff.x = xOffSource;
+                wordOff.y -= lineHeightFactor * wordHeight;
+                wordHeight = 0;
+                AlignElement(tElem);
             }
-            else
-            {
-                rt.localPosition = off;
-                off += Vector2.right * rt.sizeDelta.x + (tElem.spaceAfter ? wordSpacing : Vector2.zero);
-            }
-            spaceBefore = tElem.spaceAfter;
-
             tElem.Aligned();
         }
     }
 
+    void AlignElement(Story_UI_TextElement tElem)
+    {
+        RectTransform rt = tElem.transform as RectTransform;
+
+        if (tElem.showBG)
+        {
+            wordOff -= Vector2.right * (tElem.spaceBefore ? paddingLeftBottom.x : 0);
+            rt.localPosition = wordOff;
+            tElem.bgRectTransf.offsetMin = new Vector2(tElem.spaceBefore ? paddingLeftBottom.x : 0, paddingLeftBottom.y);
+            tElem.bgRectTransf.offsetMax = new Vector2(tElem.spaceAfter ? paddingRightTop.x : 0, paddingRightTop.y);
+            wordOff += Vector2.right * (rt.sizeDelta.x + (tElem.spaceAfter ? paddingRightTop.x : 0)) + (tElem.spaceAfter ? wordSpacingV2 : Vector2.zero);
+            wordHeight = Mathf.Max(wordHeight, Mathf.Abs(tElem.bgRectTransf.sizeDelta.y));
+        }
+        else
+        {
+            rt.localPosition = wordOff;
+            wordOff += Vector2.right * rt.sizeDelta.x + (tElem.spaceAfter ? wordSpacingV2 : Vector2.zero);
+            wordHeight = Mathf.Max(wordHeight, Mathf.Abs(rt.sizeDelta.y));
+        }
+    }
 
     public bool IsOption(string word, out string match)
     {
