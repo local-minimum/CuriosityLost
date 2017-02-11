@@ -115,7 +115,7 @@ public class Story_UI : MonoBehaviour {
         Vector2 wordSpacing = Vector2.right * this.wordSpacing;
         bool inheritPrevActiveBgSetting = false;
         bool spaceBefore = true;
-        fillSize = fillSpace.sizeDelta;
+        fillSize = fillSpace.sizeDelta;        
 
         foreach (Story_UI_TextElement tElem in textFields)
         {
