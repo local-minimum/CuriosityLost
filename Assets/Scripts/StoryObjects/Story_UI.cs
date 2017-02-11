@@ -61,7 +61,7 @@ public class Story_UI : MonoBehaviour {
     [SerializeField]
     float wordSpacing = 10;
 
-    Vector2 fillSize;
+    Vector2 screenSize;
 
     void Start()
     {
@@ -120,7 +120,7 @@ public class Story_UI : MonoBehaviour {
     {
         wordSpacingV2 = Vector2.right * this.wordSpacing;
         bool inheritPrevActiveBgSetting = false;
-        fillSize = fillSpace.sizeDelta;
+        screenSize = new Vector2(Screen.width, Screen.height);
         wordOff = new Vector2(-Screen.width, Screen.height) / 2f + new Vector2(30, -100);
         lineWidth = Screen.width * 0.9f;
         wordHeight = 0;
@@ -288,7 +288,7 @@ public class Story_UI : MonoBehaviour {
                 return true;
             }
 
-            if (fillSize != fillSpace.sizeDelta)
+            if (screenSize.x != Screen.width || screenSize.y != Screen.height)
             {
                 _delayUpdate = true;
                 return false;
