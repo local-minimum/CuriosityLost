@@ -8,6 +8,19 @@ public enum WordDecoration { None, Options, All};
 
 public class Story_UI : MonoBehaviour {
 
+    static Story_UI _storyUI;
+
+    public static Story_UI instance
+    {
+        get
+        {
+            if (_storyUI == null)
+            {
+                _storyUI = GameObject.FindObjectOfType<Story_UI>();
+            }
+            return _storyUI;
+        }
+    }
 
     struct MessagePart {
         public string msg;
@@ -66,6 +79,8 @@ public class Story_UI : MonoBehaviour {
     void Start()
     {
         DisplayMessage();
+        showing = false;
+        fillSpace.gameObject.SetActive(false);
     }
 
     string _displayedMsg;
@@ -311,14 +326,32 @@ public class Story_UI : MonoBehaviour {
         }
     }
 
+    bool showing = true;
+
     void Update()
     {
-        if (NeedToRepartition)
-        {            
-            DisplayMessage();
-        } else if (NeedRealignment)
-        {            
-            Realign();
+        if (showing)
+        {
+            if (NeedToRepartition)
+            {
+                DisplayMessage();
+            }
+            else if (NeedRealignment)
+            {
+                Realign();
+            }
         }
+    }
+
+    public void AcceptStory()
+    {
+        showing = false;
+        fillSpace.gameObject.SetActive(false);
+    }
+
+    public void ShowStory()
+    {
+        fillSpace.gameObject.SetActive(true);
+        showing = true;
     }
 }
