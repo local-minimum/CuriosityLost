@@ -1,0 +1,228 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using UnityEngine;
+using UnityEngine.UI;
+
+public enum WordDecoration { None, Options, All};
+
+public class Story_UI : MonoBehaviour {
+
+
+    struct MessagePart {
+        public string msg;
+        public bool spaceAfter;
+
+        public MessagePart(string msg, bool spaceAfter)
+        {
+            this.msg = msg;
+            this.spaceAfter = spaceAfter;
+        }
+    }
+
+    [SerializeField]
+    Transform fillSpace;
+
+    List<Story_UI_TextElement> textFields = new List<Story_UI_TextElement>();
+
+    [SerializeField]
+    FontData fontData;
+
+    [SerializeField]
+    TextAnchor textAnchor;
+
+    [SerializeField]
+    string message = "This message, is a test!";
+
+    [SerializeField]
+    Color textColor;
+
+    [SerializeField]
+    WordDecoration addBgImage = WordDecoration.Options;
+
+    [SerializeField]
+    Sprite bgImage;
+
+    [SerializeField]
+    Color bgImageColor;
+
+    [SerializeField]
+    Vector2 paddingRightTop;
+
+    [SerializeField]
+    Vector2 paddingLeftBottom;
+
+    string delimiters = " .,!:;?/";
+
+    string optionPattern = @"^\{\{(.+)\}\}$";
+
+    int cachedTextsIndex = 0;
+
+    [SerializeField]
+    float wordSpacing = 10;
+
+    void Start()
+    {
+        DisplayMessage();
+    }
+
+    public void DisplayMessage()
+    {
+        Vector2 off = Vector2.left * 300 + Vector2.up * 10;
+        Vector2 wordSpacing = Vector2.right * this.wordSpacing;
+        cachedTextsIndex = 0;
+        bool spaceBefore = true;
+        bool inheritPrevActiveBgSetting = false;
+
+        foreach (MessagePart mPart in GetMessageInParts())
+        {
+            Story_UI_TextElement t = Get_StoryTextElem(mPart.msg);
+            RectTransform rt = t.transform as RectTransform;
+            Story_UI_TextElement tElem = t.GetComponent<Story_UI_TextElement>();
+            tElem.spaceAfter = mPart.spaceAfter;
+            tElem.spaceBefore = spaceBefore;
+            string modString;
+            bool modified = IsOption(mPart.msg, out modString);
+            tElem.buttonize = modified;
+            if (modified)
+            {
+                if (tElem.originalMessage != mPart.msg)
+                {                    
+                    tElem.originalMessage = mPart.msg;
+                    tElem.Message = modString;
+                }          
+            } else
+            {
+                tElem.originalMessage = mPart.msg;
+                tElem.Message = mPart.msg;
+            }
+            
+            tElem.showBG = addBgImage == WordDecoration.All || addBgImage == WordDecoration.Options && modified || inheritPrevActiveBgSetting;
+
+            inheritPrevActiveBgSetting = modified && tElem.spaceAfter == false;
+
+            if (tElem.showBG)
+            {
+                off -= Vector2.right * (tElem.spaceBefore ? paddingLeftBottom.x : 0);
+                rt.localPosition = off;
+                tElem.bgRectTransf.offsetMin = new Vector2(tElem.spaceBefore ? paddingLeftBottom.x : 0, paddingLeftBottom.y);
+                tElem.bgRectTransf.offsetMax = new Vector2(tElem.spaceAfter ? paddingRightTop.x : 0, paddingRightTop.y);
+                off += Vector2.right * (rt.sizeDelta.x + (tElem.spaceAfter ? paddingRightTop.x : 0)) + (tElem.spaceAfter ? wordSpacing : Vector2.zero);
+            }
+            else
+            {
+                rt.localPosition = off;
+                off += Vector2.right * rt.sizeDelta.x + (tElem.spaceAfter ? wordSpacing : Vector2.zero);
+            }
+            spaceBefore = tElem.spaceAfter;
+        }
+
+        while (cachedTextsIndex < textFields.Count)
+        {
+            textFields[cachedTextsIndex].gameObject.SetActive(false);
+            cachedTextsIndex++;
+        }
+    }
+
+    public bool IsOption(string word, out string match)
+    {
+        match = null;
+        Match m = Regex.Match(word, optionPattern);
+        if (m.Success)
+        {
+            match = m.Groups[1].Value;          
+        }
+        return m.Success;
+    }
+
+    IEnumerable<MessagePart> GetMessageInParts()
+    {
+        string[] words = message.Split(delimiters.ToCharArray());
+        int wordId = 0;
+        bool spaceAfter;
+        for (int i=0; i<message.Length; i++)
+        {
+            if (wordId < words.Length && message.Substring(i, words[wordId].Length) == words[wordId])
+            {
+                i += words[wordId].Length - 1;
+                spaceAfter = i + 1 >= message.Length || message[i + 1] == ' ';
+                yield return new MessagePart(words[wordId], spaceAfter);
+                wordId++;
+                while (wordId < words.Length && words[wordId].Length == 0)
+                {
+                    wordId++;
+                }
+            } else if (message[i] != ' ')
+            {
+                spaceAfter = i + 1 >= message.Length || message[i + 1] == ' ';
+                yield return new MessagePart(message[i].ToString(), spaceAfter);
+            }
+        }
+
+    }
+
+    void AddBackground(RectTransform textTF)
+    {
+
+        GameObject go = new GameObject(textTF.name + " Background", typeof(RectTransform), typeof(Image));        
+        go.transform.SetParent(textTF);
+        RectTransform rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = paddingLeftBottom;
+        rt.offsetMax = paddingRightTop;
+        Image i = go.GetComponent<Image>();
+        i.sprite = bgImage;
+        i.color = bgImageColor;
+       
+    }
+    
+    Story_UI_TextElement Get_StoryTextElem(string txt)
+    {
+        Story_UI_TextElement storyElem;
+        if (cachedTextsIndex < textFields.Count)
+        {
+            storyElem = textFields[cachedTextsIndex];
+            cachedTextsIndex++;
+            storyElem.gameObject.SetActive(true);
+
+        } else
+        {
+            storyElem = NewTextElement();
+            cachedTextsIndex++;
+            textFields.Add(storyElem);
+
+            Text t = storyElem.textArea;
+            t.alignment = textAnchor;
+            t.font = fontData.font;
+            t.fontSize = fontData.fontSize;
+            t.fontStyle = fontData.fontStyle;
+
+            ContentSizeFitter cfit = storyElem.GetComponent<ContentSizeFitter>();
+            cfit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            cfit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            RectTransform rt = storyElem.transform as RectTransform;
+            rt.anchorMin = Vector2.up;
+            rt.anchorMax = Vector2.up;
+            rt.pivot = Vector2.zero;
+
+            AddBackground(rt);
+        }
+        
+        return storyElem;
+    }
+
+    Story_UI_TextElement NewTextElement()
+    {
+        GameObject go = new GameObject("Text Bit " + cachedTextsIndex, typeof(Text), typeof(ContentSizeFitter), typeof(Story_UI_TextElement));        
+        go.transform.SetParent(fillSpace);
+        
+        return go.GetComponent<Story_UI_TextElement>();
+    }
+
+    void Update()
+    {
+        DisplayMessage();
+    }
+}
