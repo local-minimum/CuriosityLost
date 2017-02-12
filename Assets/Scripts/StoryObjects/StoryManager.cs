@@ -7,6 +7,9 @@ public class StoryManager : MonoBehaviour {
     int index = 0;
 
     [SerializeField]
+    bool wipeProgressOnLoad = false;
+
+    [SerializeField]
     string[] rejectionOptions;
 
     [SerializeField]
@@ -14,6 +17,28 @@ public class StoryManager : MonoBehaviour {
 
     [SerializeField]
     Story_UI storyUI;
+
+    [SerializeField, HideInInspector]
+    List<string> storyKeys = new List<string>();
+
+    [SerializeField, HideInInspector]
+    List<Story_Item> storyItems = new List<Story_Item>();
+
+    void Start()
+    {
+        if (wipeProgressOnLoad)
+        {
+            WipeProgress();
+        }
+    }
+
+    public void WipeProgress()
+    {
+        for (int i=0, l=storyItems.Count; i< l; i++)
+        {
+            storyItems[i].WipeProgress();
+        }
+    }
 
 	void OnEnable()
     {
@@ -51,10 +76,26 @@ public class StoryManager : MonoBehaviour {
             return rejectionOptions[index];
         }
     }
+
     [SerializeField]
     float delayShowStory = 1f;
 
     Story_Piece GetPiece(string discoverableType) {
+        for (int keyI = 0, keyL = storyKeys.Count; keyI < keyL; keyI++)
+        {
+            if (storyKeys[keyI] != discoverableType)
+            {
+                continue;
+            }
+
+            Story_Piece piece = storyItems[keyI].NextPiece();
+            if (piece)
+            {
+                piece.hasBeenShown = true;
+                return piece;
+            }
+            
+        }
         return null;
     }
 
@@ -71,8 +112,8 @@ public class StoryManager : MonoBehaviour {
             Discoverable.SetAllDiscovered(discoverableType);
             walker.SetSpacerMode(SpacerMode.Standing);
         }
-        else {
-            storyUI.ShowStory();
+        else {            
+            storyUI.ShowStory(activePiece);
         }
     }
 }

@@ -1643,6 +1643,11 @@ MonoBehaviour:
   - I'd rather not
   walker: {fileID: 129777251}
   storyUI: {fileID: 62073872}
+  storyKeys:
+  - Cube
+  storyItems:
+  - pieces:
+    - {fileID: 11400000, guid: 091c8d02e89831d4cacc85dec2f798a0, type: 2}
   delayShowStory: 1
 --- !u!4 &1313001122
 Transform:

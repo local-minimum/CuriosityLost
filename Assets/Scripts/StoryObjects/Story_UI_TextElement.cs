@@ -12,7 +12,7 @@ public class Story_UI_TextElement : MonoBehaviour {
     public bool spaceBefore = false;
     public bool spaceAfter = false;
 
-    public string originalMessage;
+    public string choiceKey;
 
     Button bgButton;
 

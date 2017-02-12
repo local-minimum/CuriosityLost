@@ -106,14 +106,14 @@ public class Story_UI : MonoBehaviour {
             tElem.buttonize = modified;
             if (modified)
             {
-                if (tElem.originalMessage != mPart.msg)
+                if (tElem.choiceKey != mPart.msg)
                 {                    
-                    tElem.originalMessage = mPart.msg;
+                    tElem.choiceKey = mPart.msg;
                     tElem.Message = modString;
                 }          
             } else
             {
-                tElem.originalMessage = mPart.msg;
+                tElem.choiceKey = mPart.msg;
                 tElem.Message = mPart.msg;
             }
 
@@ -349,6 +349,7 @@ public class Story_UI : MonoBehaviour {
 
     public void AcceptStory()
     {
+        Time.timeScale = timeScale > 0 ? timeScale : 1f;
         showing = false;
         fillSpace.gameObject.SetActive(false);
         if (OnStoryAccept != null)
@@ -357,8 +358,18 @@ public class Story_UI : MonoBehaviour {
         }
     }
 
+    float timeScale;
+
+    public void ShowStory(Story_Piece piece)
+    {
+        message = piece.storyText;
+        ShowStory();
+    }
+
     public void ShowStory()
     {
+        timeScale = Time.timeScale;
+        Time.timeScale = 0;
         fillSpace.gameObject.SetActive(true);
         showing = true;
     }

@@ -11,6 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8096141319d54344ca993706db536677, type: 3}
   m_Name: TestStory
   m_EditorClassIdentifier: 
-  storyText: 
+  storyText: Real discovery!
   optionKeys:
   - 
+  hasBeenShown: 0
