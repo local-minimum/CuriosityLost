@@ -54,13 +54,16 @@ public class StoryManager : MonoBehaviour {
     [SerializeField]
     float delayShowStory = 1f;
 
-    Story_Piece activePiece;
+    Story_Piece GetPiece(string discoverableType) {
+        return null;
+    }
 
     IEnumerator<WaitForSeconds> Investigate()
     {
         string discoverableType = walker.DiscoverableKey;
-
+        Story_Piece activePiece = GetPiece(discoverableType);
         Debug.Log(discoverableType);
+
 
         yield return new WaitForSeconds(delayShowStory);
 

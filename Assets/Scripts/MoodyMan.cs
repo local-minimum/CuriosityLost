@@ -50,19 +50,30 @@ public class MoodyMan : MonoBehaviour {
     void OnEnable()
     {
         walker.OnModeChange += Walker_OnModeChange;
+        Story_UI.instance.OnStoryAccept += Instance_OnStoryAccept;
     }
+
 
     void OnDisable()
     {
         walker.OnModeChange -= Walker_OnModeChange;
+        try
+        {
+            Story_UI.instance.OnStoryAccept -= Instance_OnStoryAccept;
+        } catch (System.NullReferenceException)
+        {
+            //This is OK
+        }
+    }
+
+    private void Instance_OnStoryAccept()
+    {
+        StartCoroutine(Rejuvinate(investigationBonus * decayCurve.Evaluate(mood)));
     }
 
     private void Walker_OnModeChange(SpacerMode mode)
     {
-        if (mode == SpacerMode.Investigating)
-        {
-            StartCoroutine(Rejuvinate(investigationBonus * decayCurve.Evaluate(mood)));
-        } else if (mode == SpacerMode.Jumping || mode == SpacerMode.Walking)
+        if (mode == SpacerMode.Jumping || mode == SpacerMode.Walking)
         {
             isMoving = true;
         } else
