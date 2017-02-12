@@ -44,6 +44,7 @@ public class SelectController : MonoBehaviour {
         {
             selectImage.sprite = null;
         }
+        anim.transform.position = item.transform.position;
         anim.SetTrigger(itemTrigger);
     }
     

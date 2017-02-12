@@ -83,7 +83,7 @@ public class WalkController : MonoBehaviour {
             Story_UI.instance.OnStoryAccept -= Instance_OnStoryAccept;
         } catch (System.NullReferenceException)
         {
-            Debug.Log("Object was destroyed, no problem");
+            //This is OK
         }
     }
 
@@ -192,7 +192,7 @@ public class WalkController : MonoBehaviour {
                         doInvestigate = true;
                         SetSpacerMode(SpacerMode.Investigating);
                         selectedDiscoverable.Investigate();
-                        selectController.ClickItem(selectController.gameObject);
+                        selectController.ClickItem(selectedDiscoverable.gameObject);
                         selectedDiscoverable = null;
                     }
                 }
