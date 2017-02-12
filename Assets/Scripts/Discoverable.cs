@@ -15,8 +15,7 @@ public class Discoverable : MonoBehaviour {
 	}
 	
     public void Investigate() {
-        discovered = true;
-        Story_UI.instance.ShowStory();
+        discovered = true;        
     }
 
 }

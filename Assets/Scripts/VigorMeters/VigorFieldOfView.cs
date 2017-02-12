@@ -88,7 +88,7 @@ public class VigorFieldOfView : MonoBehaviour {
         int bottomOff = Mathf.CeilToInt(yOptimum);
         int topOff = h - bottomOff - 1;
 
-        int stepSizeMiddleOff = Mathf.CeilToInt(((xOptimum - Mathf.Floor(xOptimum)) + (yOptimum - Mathf.Floor(yOptimum))) / .2f) + 3;
+        //int stepSizeMiddleOff = Mathf.CeilToInt(((xOptimum - Mathf.Floor(xOptimum)) + (yOptimum - Mathf.Floor(yOptimum))) / .2f) + 3;
         int steps = 0;
 
         for (int x=0; x< w; x++)

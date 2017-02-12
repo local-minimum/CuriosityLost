@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public enum WordDecoration { None, Options, All};
 
+public delegate void StoryAccept();
+
 public class Story_UI : MonoBehaviour {
 
     static Story_UI _storyUI;
@@ -21,6 +23,8 @@ public class Story_UI : MonoBehaviour {
             return _storyUI;
         }
     }
+
+    public event StoryAccept OnStoryAccept;
 
     struct MessagePart {
         public string msg;
@@ -76,11 +80,43 @@ public class Story_UI : MonoBehaviour {
 
     Vector2 screenSize;
 
+    [SerializeField]
+    WalkController walker;
+
     void Start()
     {
         DisplayMessage();
         showing = false;
         fillSpace.gameObject.SetActive(false);
+    }
+
+
+    void OnEnable()
+    {
+        walker.OnModeChange += Walker_OnModeChange;
+    }
+
+    void OnDisable()
+    {
+        walker.OnModeChange -= Walker_OnModeChange;
+    }
+
+    private void Walker_OnModeChange(SpacerMode mode)
+    {
+        if (mode == SpacerMode.Investigating)
+        {
+            StartCoroutine(Investigate());
+        }
+    }
+
+    [SerializeField]
+    float delayShowStory = 1f;
+
+    IEnumerator<WaitForSeconds> Investigate()
+    {
+        yield return new WaitForSeconds(delayShowStory);
+        
+        ShowStory();
     }
 
     string _displayedMsg;
@@ -347,6 +383,10 @@ public class Story_UI : MonoBehaviour {
     {
         showing = false;
         fillSpace.gameObject.SetActive(false);
+        if (OnStoryAccept != null)
+        {
+            OnStoryAccept();
+        }
     }
 
     public void ShowStory()

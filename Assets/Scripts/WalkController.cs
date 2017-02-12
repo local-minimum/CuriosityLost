@@ -73,11 +73,23 @@ public class WalkController : MonoBehaviour {
     void OnEnable()
     {
         ship.OnShipEvent += Ship_OnShipEvent;
+        Story_UI.instance.OnStoryAccept += Instance_OnStoryAccept;
     }
 
     void OnDisable()
     {
         ship.OnShipEvent -= Ship_OnShipEvent;
+        try {
+            Story_UI.instance.OnStoryAccept -= Instance_OnStoryAccept;
+        } catch (System.NullReferenceException)
+        {
+            Debug.Log("Object was destroyed, no problem");
+        }
+    }
+
+    private void Instance_OnStoryAccept()
+    {
+        SetSpacerMode(SpacerMode.Standing);
     }
 
     private void Ship_OnShipEvent(SpaceShip ship, ShipEventType eventType)
@@ -166,54 +178,58 @@ public class WalkController : MonoBehaviour {
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (spacerMode != SpacerMode.Investigating)
         {
-            Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            bool doInvestigate = false;
-            if (Physics.Raycast(r, out hit, 100, discoverableCasting))
+            if (Input.GetMouseButtonDown(0))
             {
-                if (selectedDiscoverable == hit.transform.GetComponent<Discoverable>())
+                Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                bool doInvestigate = false;
+                if (Physics.Raycast(r, out hit, 100, discoverableCasting))
                 {
-                    doInvestigate = true;
-                    SetSpacerMode(SpacerMode.Investigating);
-                    selectedDiscoverable.Investigate();
-                    selectController.ClickItem(selectController.gameObject);
-                    selectedDiscoverable = null;
+                    if (selectedDiscoverable == hit.transform.GetComponent<Discoverable>())
+                    {
+                        doInvestigate = true;
+                        SetSpacerMode(SpacerMode.Investigating);
+                        selectedDiscoverable.Investigate();
+                        selectController.ClickItem(selectController.gameObject);
+                        selectedDiscoverable = null;
+                    }
+                }
+
+                if (!doInvestigate && Physics.Raycast(r, out hit, 100, walkMask))
+                {
+                    walkTarget = ship.planet.WorldToFloatPosition(hit.point);
+                    proximityThreshold = (walkTarget - worldEntity.gridPosition).magnitude * .15f;
+                    if (proximityThreshold < 5)
+                    {
+                        proximityThreshold = 0.01f;
+                    }
+                    SetSpacerMode(SpacerMode.Walking);
+                    selectController.ClickLocation(hit.point);
+
                 }
             }
 
-            if (!doInvestigate && Physics.Raycast(r, out hit, 100, walkMask))
+            if (spacerMode == SpacerMode.Walking)
             {
-                walkTarget = ship.planet.WorldToFloatPosition(hit.point);
-                proximityThreshold = (walkTarget - worldEntity.gridPosition).magnitude * .15f;
-                if (proximityThreshold < 5)
+                float delta = (walkTarget - worldEntity.gridPosition).magnitude;
+                if (delta < proximityThreshold)
                 {
-                    proximityThreshold = 0.01f;
+                    SetSpacerMode(SpacerMode.Standing);
                 }
-                SetSpacerMode(SpacerMode.Walking);
-                selectController.ClickLocation(hit.point);
-
-            }
-        }
-
-        if (spacerMode == SpacerMode.Walking)
-        {
-            float delta = (walkTarget - worldEntity.gridPosition).magnitude;
-            if (delta < proximityThreshold)
-            {
-                SetSpacerMode(SpacerMode.Standing);
-            } else
-            {
-                Vector2 direction = WalkDirection;                
-
-                Vector2 walk = direction * walkSpeed * Time.deltaTime;
-                if (walk.magnitude > delta)
+                else
                 {
-                    walk = walk.normalized * delta;
+                    Vector2 direction = WalkDirection;
+
+                    Vector2 walk = direction * walkSpeed * Time.deltaTime;
+                    if (walk.magnitude > delta)
+                    {
+                        walk = walk.normalized * delta;
+                    }
+                    worldEntity.gridPosition += walk;
+                    SetCharacterPosition();
                 }
-                worldEntity.gridPosition += walk;
-                SetCharacterPosition();
             }
         }
 
