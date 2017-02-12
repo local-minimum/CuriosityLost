@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Name: TestStory
   m_EditorClassIdentifier: 
   storyText: 
-  optionKeys: []
+  optionKeys:
+  - 

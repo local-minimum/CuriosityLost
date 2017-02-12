@@ -283,6 +283,18 @@ public class WalkController : MonoBehaviour {
 
     Discoverable selectedDiscoverable = null;
 
+    public string DiscoverableKey
+    {
+        get
+        {
+            if (selectedDiscoverable)
+            {
+                return selectedDiscoverable.typeName;
+            }
+            return null;
+        }
+    }
+
     bool EnterDiscoverable()
     {
         Bounds b = col.bounds;
@@ -336,7 +348,7 @@ public class WalkController : MonoBehaviour {
         }
     }
 
-    void SetSpacerMode(SpacerMode mode)
+    public void SetSpacerMode(SpacerMode mode)
     {
         if (spacerMode == mode)
         {

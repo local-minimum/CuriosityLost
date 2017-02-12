@@ -80,43 +80,11 @@ public class Story_UI : MonoBehaviour {
 
     Vector2 screenSize;
 
-    [SerializeField]
-    WalkController walker;
-
     void Start()
     {
         DisplayMessage();
         showing = false;
         fillSpace.gameObject.SetActive(false);
-    }
-
-
-    void OnEnable()
-    {
-        walker.OnModeChange += Walker_OnModeChange;
-    }
-
-    void OnDisable()
-    {
-        walker.OnModeChange -= Walker_OnModeChange;
-    }
-
-    private void Walker_OnModeChange(SpacerMode mode)
-    {
-        if (mode == SpacerMode.Investigating)
-        {
-            StartCoroutine(Investigate());
-        }
-    }
-
-    [SerializeField]
-    float delayShowStory = 1f;
-
-    IEnumerator<WaitForSeconds> Investigate()
-    {
-        yield return new WaitForSeconds(delayShowStory);
-        
-        ShowStory();
     }
 
     string _displayedMsg;

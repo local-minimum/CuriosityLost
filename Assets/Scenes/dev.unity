@@ -1566,10 +1566,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9678e155b06dd5e4ba16a760edfd2c11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  options:
-  - odd
-  - surprised
-  - frustrated
+  rejectionOptions:
+  - Dull
+  - Doesn't interest me
+  - Not worth my time
+  - Unintersting
+  - I'd rather not
+  walker: {fileID: 129777251}
+  storyUI: {fileID: 62073872}
+  delayShowStory: 1
 --- !u!4 &1313001122
 Transform:
   m_ObjectHideFlags: 0
