@@ -22,6 +22,7 @@ public class Discoverable : MonoBehaviour {
             for (int i=0,l=_entities[typeName].Count; i< l; i++)
             {
                 _entities[typeName][i].discovered = true;
+                Debug.Log("Discovered " + _entities[typeName][i].name);
             }
         }
     }

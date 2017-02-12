@@ -61,9 +61,7 @@ public class StoryManager : MonoBehaviour {
     IEnumerator<WaitForSeconds> Investigate()
     {
         string discoverableType = walker.DiscoverableKey;
-        Story_Piece activePiece = GetPiece(discoverableType);
-        Debug.Log(discoverableType);
-
+        Story_Piece activePiece = GetPiece(discoverableType);        
 
         yield return new WaitForSeconds(delayShowStory);
 

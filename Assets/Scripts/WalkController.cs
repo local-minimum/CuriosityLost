@@ -304,7 +304,7 @@ public class WalkController : MonoBehaviour {
         for (int i=0; i<overlaps.Length; i++)
         {
             Discoverable tmp = overlaps[i].GetComponent<Discoverable>();
-            if (tmp == null)
+            if (tmp == null || tmp.discovered)
             {
                 continue;
             }
