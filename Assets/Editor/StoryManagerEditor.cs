@@ -22,7 +22,7 @@ public class StoryManagerEditor : Editor {
     void DrawStory(SerializedProperty keys, SerializedProperty values)
     {
 
-        keys.isExpanded = EditorGUILayout.Foldout(keys.isExpanded, keys.isExpanded ? "THE STORY" : string.Format("THE STORY, {0} items", keys.arraySize));
+        keys.isExpanded = EditorGUILayout.Foldout(keys.isExpanded, keys.isExpanded ? "THE STORY" : string.Format("THE STORY ({0} items)", keys.arraySize));
 
         if (keys.isExpanded)
         {
@@ -36,7 +36,7 @@ public class StoryManagerEditor : Editor {
                     
                 }
 
-                DrawStoryItem(keys.GetArrayElementAtIndex(i), values.GetArrayElementAtIndex(i));
+                DrawStoryItem(i, keys.GetArrayElementAtIndex(i), values.GetArrayElementAtIndex(i));
             }
             EditorGUI.indentLevel -= 1;
             NewKey(keys);    
@@ -44,17 +44,44 @@ public class StoryManagerEditor : Editor {
 
     }
 
-    void DrawStoryItem(SerializedProperty key, SerializedProperty item)
+    int editKeyIndex = -1;
+    string editKeyText;
+
+    void DrawStoryItem(int index, SerializedProperty key, SerializedProperty item)
     {
         
         
         SerializedProperty pieces = item.FindPropertyRelative("pieces");
-        
-        item.isExpanded = EditorGUILayout.Foldout(item.isExpanded, item.isExpanded ? key.stringValue : string.Format("{0} ({1} pieces)", key.stringValue, pieces.arraySize));
 
+        EditorGUILayout.BeginHorizontal();
+        if (editKeyIndex != index)
+        {
+            item.isExpanded = EditorGUILayout.Foldout(item.isExpanded, item.isExpanded ? key.stringValue : string.Format("{0} ({1} pieces)", key.stringValue, pieces.arraySize));
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Edit"))
+            {
+                editKeyIndex = index;
+                editKeyText = key.stringValue;
+            }
+        } else
+        {
+            editKeyText = EditorGUILayout.TextField(editKeyText);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Update"))
+            {
+                key.stringValue = editKeyText;
+                editKeyIndex = -1;
+            }
+            if (GUILayout.Button("Cancel"))
+            {
+                editKeyIndex = -1;
+            }
+        }
+        EditorGUILayout.EndHorizontal();
         if (item.isExpanded)
         {
             pieces.arraySize = EditorGUILayout.IntField("Pieces:", pieces.arraySize);
+            
             EditorGUI.indentLevel += 1;
             for (int i = 0, l = pieces.arraySize; i < l; i++)
             {
@@ -85,8 +112,7 @@ public class StoryManagerEditor : Editor {
         }
         else
         {
-            EditorGUILayout.LabelField("Add item");
-            editingNewKey = GUILayout.Button("+");
+            editingNewKey = GUILayout.Button("+ Add Story   Item");
             if (editingNewKey)
             {
                 editKey = "";

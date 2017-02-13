@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8096141319d54344ca993706db536677, type: 3}
+  m_Name: FirstCube
+  m_EditorClassIdentifier: 
+  storyText: The first {{cube_prop}} cube. This is a {{emotive}} find.
+  hasBeenShown: 1
+  choices:
+  - choiceKey: cube_prop
+    defaultOption: 0
+    options:
+    - {fileID: 0}
+    - {fileID: 0}
+  - choiceKey: emotive
+    defaultOption: 0
+    options:
+    - {fileID: 11400000, guid: 5e77ad46ffeb12f4faf4e8606408af5e, type: 2}
+    - {fileID: 11400000, guid: 95cc1cd0a7d22ac419abd96dbd887346, type: 2}
+    - {fileID: 11400000, guid: f743c74b4d680164f92bc41c504256f9, type: 2}
+    - {fileID: 11400000, guid: ad635711ef1555c45ba8cab8116de1b9, type: 2}
+    - {fileID: 11400000, guid: 5e12ab61ca7e08c4abeb652e91fa1777, type: 2}

@@ -87,6 +87,24 @@ public class Story_UI : MonoBehaviour {
         fillSpace.gameObject.SetActive(false);
     }
 
+    void OnEnable()
+    {
+        Story_UI_TextElement.OnChangeRequest += Story_UI_TextElement_OnChangeRequest;
+    }
+
+    void OnDisable()
+    {
+        Story_UI_TextElement.OnChangeRequest -= Story_UI_TextElement_OnChangeRequest;
+    }
+
+    private void Story_UI_TextElement_OnChangeRequest(Story_UI_TextElement elem)
+    {
+        if (activePiece)
+        {
+            elem.Option = activePiece.GetNextOption(elem.choiceKey);
+        }
+    }
+
     string _displayedMsg;
 
     public void DisplayMessage()
@@ -99,18 +117,27 @@ public class Story_UI : MonoBehaviour {
         {
             Story_UI_TextElement t = Get_StoryTextElem(mPart.msg);
             Story_UI_TextElement tElem = t.GetComponent<Story_UI_TextElement>();
+            tElem.Option = null;
             tElem.spaceAfter = mPart.spaceAfter;
             tElem.spaceBefore = spaceBefore;
             string modString;
-            bool modified = IsOption(mPart.msg, out modString);
-            tElem.buttonize = modified;
-            if (modified)
+            bool isOption = IsOption(mPart.msg, out modString);
+            tElem.buttonize = isOption;
+            if (isOption)
             {
-                if (tElem.choiceKey != mPart.msg)
-                {                    
-                    tElem.choiceKey = mPart.msg;
+                tElem.choiceKey = modString;
+                if (activePiece)
+                {
+                    tElem.Option = activePiece.GetNextOption(modString);
+                    if (tElem.textArea.text == null)
+                    {
+                        tElem.Message = modString;
+                    }
+                }
+                else {
                     tElem.Message = modString;
-                }          
+                }
+                     
             } else
             {
                 tElem.choiceKey = mPart.msg;
@@ -352,6 +379,8 @@ public class Story_UI : MonoBehaviour {
         Time.timeScale = timeScale > 0 ? timeScale : 1f;
         showing = false;
         fillSpace.gameObject.SetActive(false);
+        activePiece = null;
+
         if (OnStoryAccept != null)
         {
             OnStoryAccept();
@@ -359,10 +388,12 @@ public class Story_UI : MonoBehaviour {
     }
 
     float timeScale;
+    Story_Piece activePiece;
 
     public void ShowStory(Story_Piece piece)
     {
         message = piece.storyText;
+        activePiece = piece;
         ShowStory();
     }
 
@@ -371,6 +402,6 @@ public class Story_UI : MonoBehaviour {
         timeScale = Time.timeScale;
         Time.timeScale = 0;
         fillSpace.gameObject.SetActive(true);
-        showing = true;
+        showing = true;        
     }
 }

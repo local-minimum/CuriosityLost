@@ -8,10 +8,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8096141319d54344ca993706db536677, type: 3}
-  m_Name: TestStory
+  m_Script: {fileID: 11500000, guid: 298e66958d5ac1a4bb92960b4176d3ba, type: 3}
+  m_Name: CubeQualityB
   m_EditorClassIdentifier: 
-  storyText: Real discovery!
-  optionKeys:
-  - 
-  hasBeenShown: 0
+  text: jelly-like
+  condition:
+    text: 
+    effect: {fileID: 0}
+    requirements: []
+    requirementThresholds: []

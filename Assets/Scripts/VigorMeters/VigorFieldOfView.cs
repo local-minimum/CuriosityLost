@@ -44,7 +44,7 @@ public class VigorFieldOfView : MonoBehaviour {
         coverSprite = Sprite.Create(coverTex, new Rect(0, 0, coverTex.width, coverTex.height), Vector2.one * 0.5f);
         coverSprite.name = "Dynamic Cover Sprite";
         img.sprite = coverSprite;
-        img.preserveAspect = true;              
+        img.preserveAspect = false;              
     }
 
     bool ScreenMatchesSprite

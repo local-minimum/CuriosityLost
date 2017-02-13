@@ -25,6 +25,19 @@ public class Story_UI_TextElement : MonoBehaviour {
         }
     }
 
+    Story_Option _activeOption;
+    public Story_Option Option
+    {
+        set
+        {
+            _activeOption = value;
+            if (value)
+            {
+                Message = _activeOption.text;
+            }
+        }
+    }
+
     public void Aligned()
     {
         _needRalignment = false;
@@ -42,7 +55,7 @@ public class Story_UI_TextElement : MonoBehaviour {
             }       
         }
     }
-    
+
     public bool buttonize
     {
         get

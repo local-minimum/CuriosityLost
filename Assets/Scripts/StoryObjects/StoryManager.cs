@@ -56,7 +56,6 @@ public class StoryManager : MonoBehaviour {
     private void Story_UI_TextElement_OnChangeRequest(Story_UI_TextElement elem)
     {
         //TODO replace with actual options
-        elem.Message = RejectMsg;
     }    
 
     private void Walker_OnModeChange(SpacerMode mode)
