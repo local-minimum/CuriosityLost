@@ -28,7 +28,8 @@ public class SelectController : MonoBehaviour {
 
     public void ClickLocation(Vector3 pos)
     {
-        worldCanvas.transform.position = pos + Vector3.up * Yoffset;
+        
+        worldCanvas.transform.position = StepTiler.instance.GetGroundAt(pos) + Vector3.up * Yoffset;
         anim.SetTrigger(walkTargetTrigger);
     }
 
@@ -44,7 +45,7 @@ public class SelectController : MonoBehaviour {
         {
             selectImage.sprite = null;
         }
-        anim.transform.position = item.transform.position;
+        worldCanvas.transform.position = item.transform.position;
         anim.SetTrigger(itemTrigger);
     }
     

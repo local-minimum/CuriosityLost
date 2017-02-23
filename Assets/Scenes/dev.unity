@@ -1008,7 +1008,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96f70ef72fe686a4f82328706e89f02b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundGenerationType: 0
+  groundGenerationType: 1
   worldSize: 100
   clampMin: -1
   clampMax: 5
@@ -1019,10 +1019,11 @@ MonoBehaviour:
   perlinBMagnitude: 1
   perlinBFrequency: {x: 0.3, y: 0.3}
   perlinBPower: 2
-  prefab: {fileID: 0}
+  prefab: {fileID: 4977716362472558, guid: 5613a620ad4b8b84784fb1e1b585b3c8, type: 2}
   lowHeight: {r: 0.41911763, g: 0.21916537, b: 0.16025086, a: 1}
   highHeight: {r: 0.7843138, g: 0.7816, b: 0.105882354, a: 1}
   uvScaling: {x: 13, y: 13}
+  debugDrawGizmo: 1
 --- !u!224 &668401456
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1083,7 +1084,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 0.2, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &668401459
 MonoBehaviour:

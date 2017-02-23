@@ -251,6 +251,13 @@ public class StepTiler : MonoBehaviour {
         }
     }
 
+    public Vector3 GetGroundAt(Vector3 worldPosition)
+    {
+        Vector3 pos = transform.InverseTransformPoint(worldPosition) + planarOffset;
+        float top = topology[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.z)];
+        return transform.TransformPoint(worldPosition.x, top * heightScale, worldPosition.z);
+    }
+
     public Vector3 GridPositionToWorld(GridPos pos)
     {
         return transform.TransformPoint(new Vector3(0.5f + pos.x - planarOffset.x, heightScale * topology[pos.x, pos.y], 0.5f + pos.y - planarOffset.z));
@@ -380,11 +387,21 @@ public class StepTiler : MonoBehaviour {
         Generate();        
     }
 
+    Transform tileParent;
+
     public void Generate() {
 
         SetupShape();
         midValueA = Mathf.Pow(perlinAMagnitude, perlinAPower) / 2f;
         midValueB = Mathf.Pow(perlinBMagnitude, perlinBPower) / 2f;
+
+        if (groundGenerationType == GroundGenerationType.TiledPrefabs && tileParent == null)
+        {
+            GameObject tileParentGO = new GameObject("Tiles");
+            tileParent = tileParentGO.transform;
+            tileParent.SetParent(transform, false);
+            tileParent.localPosition = Vector3.zero;
+        }
 
         for (int x = 0; x < worldSize; x++)
         {
@@ -400,7 +417,7 @@ public class StepTiler : MonoBehaviour {
                     Color c = Color.Lerp(lowHeight, highHeight, elevation - clampMin / (float)(clampMax - clampMin));
                     Transform t = GetClone(x, y);
                     Vector3 pos = t.transform.position;
-                    pos.y = elevation * heightScale;
+                    pos.y = transform.TransformPoint(new Vector3(0, elevation * heightScale, 0)).y;
                     t.transform.position = pos;
                     t.GetComponent<Renderer>().material.color = c;
                 }
@@ -438,8 +455,8 @@ public class StepTiler : MonoBehaviour {
         else
         {
             Transform t = Instantiate(prefab);
-            t.SetParent(transform);
-            t.position = Vector3.forward * x + Vector3.right * y;
+            t.SetParent(tileParent);
+            t.position = Vector3.forward * (x + 0.5f) + Vector3.right * (y + 0.5f) - planarOffset;
             t.name = string.Format("Tile {0}, {1}", x, y);
             grid[pos] = t;
             return t;
@@ -544,7 +561,7 @@ public class StepTiler : MonoBehaviour {
 
     void OnDrawGizmosSelected()
     {
-        if (debugDrawGizmo)
+        if (debugDrawGizmo && topology != null)
         {
             Gizmos.color = Color.magenta;
             int i = 0;

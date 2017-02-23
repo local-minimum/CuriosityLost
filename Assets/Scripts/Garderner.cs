@@ -52,7 +52,7 @@ public class Garderner : MonoBehaviour {
                 Vector2 pivot = sr.sprite.pivot;
                 pivot.x /= sr.sprite.rect.size.x;
                 pivot.y /= sr.sprite.rect.size.y;
-                Debug.Log(pivot);
+
                 d.transform.position = world.GridRectToWorld(positions[j]) + Vector3.up * yOffset + d.transform.TransformVector(new Vector3(-pivot.x, -pivot.y, 0));
 
                 world.Occupy(positions[j]);
