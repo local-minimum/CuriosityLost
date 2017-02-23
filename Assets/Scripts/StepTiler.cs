@@ -23,6 +23,11 @@ public struct GridPos
     {
         return new Vector3(pos.x, pos.y);
     }
+
+    public override string ToString()
+    {
+        return string.Format("GridPos ({0}, {1})", x, y);
+    }
 }
 
 [System.Serializable]
@@ -43,6 +48,11 @@ public struct GridRect
         {
             return ((Vector2)min + (Vector2)max) * 0.5f;
         }
+    }
+
+    public override string ToString()
+    {
+        return string.Format("GridRect ({0}, {1}) - ({2}, {3})", min.x, min.y, max.x, max.y);
     }
 }
 
@@ -257,7 +267,7 @@ public class StepTiler : MonoBehaviour {
     public Vector3 GridRectToWorld(GridRect gridRect)
     {
         Vector3 pos = (GridPositionToWorld(gridRect.min) + GridPositionToWorld(gridRect.max));
-        return pos / 2f;
+        return pos * 0.5f;
     }
 
     public Vector2 WorldToFloatPosition(Vector3 world)
@@ -527,5 +537,32 @@ public class StepTiler : MonoBehaviour {
         }
 
         return verts;
+    }
+
+    [SerializeField]
+    bool debugDrawGizmo = true;
+
+    void OnDrawGizmosSelected()
+    {
+        if (debugDrawGizmo)
+        {
+            Gizmos.color = Color.magenta;
+            int i = 0;
+            int tri = 0;
+            for (int x = 0; x < worldSize; x++)
+            {
+                for (int y = 0; y < worldSize; y++, i += 4, tri += 6)
+                {
+                    Vector3 A = transform.TransformPoint(new Vector3((x + 1) - planarOffset.x, heightScale * topology[x, y], (y + 1) - planarOffset.z));
+                    Vector3 B = transform.TransformPoint(new Vector3((x + 1) - planarOffset.x, heightScale * topology[x, y], y - planarOffset.z));
+                    Vector3 C = transform.TransformPoint(new Vector3(x - planarOffset.x, heightScale * topology[x, y], y - planarOffset.z));
+                    Vector3 D = transform.TransformPoint(new Vector3(x - planarOffset.x, heightScale * topology[x, y], (y + 1) - planarOffset.z));
+                    Gizmos.DrawLine(A, B);
+                    Gizmos.DrawLine(B, C);
+                    Gizmos.DrawLine(C, D);
+                    Gizmos.DrawLine(D, A);
+                }
+            }
+        }
     }
 }

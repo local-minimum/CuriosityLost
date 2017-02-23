@@ -47,10 +47,16 @@ public class Garderner : MonoBehaviour {
             for (int j=0, l=abundancies[i]; j< l; j++)
             {
                 Discoverable d = GetDiscoverableInstance(prefab);
-                d.transform.position = world.GridRectToWorld(positions[j]) + Vector3.up * yOffset;
+                //Translate object so pivot point is at center position
+                SpriteRenderer sr = d.GetComponent<SpriteRenderer>();
+                Vector2 pivot = sr.sprite.pivot;
+                pivot.x /= sr.sprite.rect.size.x;
+                pivot.y /= sr.sprite.rect.size.y;
+                Debug.Log(pivot);
+                d.transform.position = world.GridRectToWorld(positions[j]) + Vector3.up * yOffset + d.transform.TransformVector(new Vector3(-pivot.x, -pivot.y, 0));
+
                 world.Occupy(positions[j]);
                 d.worldEntity.gridPosition = positions[j].Center;
-                //TODO: If size is larger than 1 positions may remain that are now invalid
             }
         }
     }

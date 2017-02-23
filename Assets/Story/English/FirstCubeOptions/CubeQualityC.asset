@@ -9,9 +9,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 298e66958d5ac1a4bb92960b4176d3ba, type: 3}
-  m_Name: CubeQualityB
+  m_Name: CubeQualityC
   m_EditorClassIdentifier: 
-  text: jelly-like
+  text: silicon based
   condition:
     text: 
     effect: {fileID: 0}

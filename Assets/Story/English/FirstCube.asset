@@ -17,8 +17,9 @@ MonoBehaviour:
   - choiceKey: cube_prop
     defaultOption: 0
     options:
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 11400000, guid: 6ddce886f545a8542867684851bf0f40, type: 2}
+    - {fileID: 11400000, guid: 92181915db1be3c4d81ad9bae1821552, type: 2}
+    - {fileID: 11400000, guid: bd83d1b66845c5643a9442011de2f19f, type: 2}
   - choiceKey: emotive
     defaultOption: 0
     options:
