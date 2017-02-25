@@ -456,7 +456,10 @@ public class StepTiler : MonoBehaviour {
                     Vector3 pos = t.transform.position;
                     pos.y = transform.TransformPoint(new Vector3(0, elevation * heightScale, 0)).y;
                     t.transform.position = pos;
-                    t.GetComponent<Renderer>().material.color = c;
+                    Renderer r = t.GetComponent<Renderer>();
+                    r.material.color = c;
+                    r.material.SetColor("_HighlightColor", c);
+                    
                 }
 
             }
@@ -485,8 +488,6 @@ public class StepTiler : MonoBehaviour {
     [SerializeField, Range(0, 1)]
     float colorBlending = 0.25f;
 
-    Dictionary<GridPos, Color> colorSource = new Dictionary<GridPos, Color>();
-
     public void SetColor(Vector2 pos, Color color)
     {
         SetColor(new GridPos((int)pos.x, (int)pos.y), color);
@@ -497,16 +498,8 @@ public class StepTiler : MonoBehaviour {
         if (groundGenerationType == GroundGenerationType.TiledPrefabs)
         {
             Renderer r = grid[pos].GetComponent<Renderer>();
-            Color c;
-            if (colorSource.ContainsKey(pos))
-            {
-                c = colorSource[pos];
-            }
-            else {
-                c = r.material.color;
-                colorSource[pos] = c;
-            }
-            r.material.color = Color.Lerp(c, color, colorBlending);
+            r.material.SetColor("_HighlightColor", color);
+            r.material.SetFloat("_HighlightTime", Time.timeSinceLevelLoad);
         }
     }
 
