@@ -29,4 +29,11 @@ public class WorldEntity : MonoBehaviour {
             Gizmos.DrawWireCube(b.center, boxSize);
         }
     }
+
+    public void ColorMyTile()
+    {
+
+        StepTiler.instance.SetColor(gridPosition, Color.white);
+
+    }
 }

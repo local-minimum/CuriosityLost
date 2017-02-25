@@ -117,11 +117,26 @@ public class WalkController : MonoBehaviour {
         }      
     }
 
-    void SetCharacterPosition()
+    bool SetCharacterPosition()
     {
-        Vector3 pos = ship.planet.GridPositionToWorld(worldEntity.gridPosition);
-        pos.y = ship.planet.WorldPosHeight(feetPosition.position);
-        transform.position = pos + Vector3.up * heightOverGround;
+        bool onMap = true;
+        Vector3 pos = Vector3.one;
+        try {
+            pos = ship.planet.GridPositionToWorld(worldEntity.gridPosition);
+        } catch (OutsideMapException)
+        {
+            onMap = false;
+        } finally
+    	{
+            if (onMap)
+            {
+                pos.y = ship.planet.WorldPosHeight(feetPosition.position);
+                transform.position = pos + Vector3.up * heightOverGround;
+                worldEntity.ColorMyTile();
+            }
+        }
+
+        return onMap;
     }
 
     void SetSprite() {
@@ -193,6 +208,7 @@ public class WalkController : MonoBehaviour {
                         SetSpacerMode(SpacerMode.Investigating);
                         selectedDiscoverable.Investigate();
                         selectController.ClickItem(selectedDiscoverable.gameObject);
+                        //selectedDiscoverable.worldEntity.ColorMyTile();
                         selectedDiscoverable = null;
                     }
                 }
@@ -228,7 +244,11 @@ public class WalkController : MonoBehaviour {
                         walk = walk.normalized * delta;
                     }
                     worldEntity.gridPosition += walk;
-                    SetCharacterPosition();
+                    if (!SetCharacterPosition())
+                    {
+                        worldEntity.gridPosition -= walk;
+                        SetSpacerMode(SpacerMode.Standing);
+                    }
                 }
             }
         }

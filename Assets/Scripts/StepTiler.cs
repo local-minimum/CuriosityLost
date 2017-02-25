@@ -28,6 +28,14 @@ public struct GridPos
     {
         return string.Format("GridPos ({0}, {1})", x, y);
     }
+
+    public GridPos inverted
+    {
+        get
+        {
+            return new GridPos(y, x);
+        }
+    }
 }
 
 [System.Serializable]
@@ -55,6 +63,18 @@ public struct GridRect
         return string.Format("GridRect ({0}, {1}) - ({2}, {3})", min.x, min.y, max.x, max.y);
     }
 }
+
+[System.Serializable]
+public class OutsideMapException : System.Exception
+{
+    public OutsideMapException() { }
+    public OutsideMapException(string message) : base(message) { }
+    public OutsideMapException(string message, System.Exception inner) : base(message, inner) { }
+    protected OutsideMapException(
+      System.Runtime.Serialization.SerializationInfo info,
+      System.Runtime.Serialization.StreamingContext context) : base(info, context)
+    { }
+};
 
 public enum GroundGenerationType { Mesh, TiledPrefabs};
 
@@ -254,20 +274,37 @@ public class StepTiler : MonoBehaviour {
     public Vector3 GetGroundAt(Vector3 worldPosition)
     {
         Vector3 pos = transform.InverseTransformPoint(worldPosition) + planarOffset;
-        float top = topology[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.z)];
+        float top;
+        try {
+            top = topology[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.z)];
+        } catch (System.IndexOutOfRangeException)
+        {
+            throw new OutsideMapException();
+        } 
+
         return transform.TransformPoint(worldPosition.x, top * heightScale, worldPosition.z);
     }
 
     public Vector3 GridPositionToWorld(GridPos pos)
     {
-        return transform.TransformPoint(new Vector3(0.5f + pos.x - planarOffset.x, heightScale * topology[pos.x, pos.y], 0.5f + pos.y - planarOffset.z));
+        try {
+            return transform.TransformPoint(new Vector3(0.5f + pos.x - planarOffset.x, heightScale * topology[pos.x, pos.y], 0.5f + pos.y - planarOffset.z));
+        } catch (System.IndexOutOfRangeException)
+        {
+            throw new OutsideMapException();
+        }
     }
 
     public Vector3 GridPositionToWorld(Vector2 pos)
     {
         //SmarterThingy for handlng jumps needed
-        float top = topology[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y)];
-
+        float top = 0;
+        try {
+            top = topology[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y)];
+        } catch (System.IndexOutOfRangeException)
+        {
+            throw new OutsideMapException();
+        }
         return transform.TransformPoint(new Vector3(pos.x - planarOffset.x, heightScale * top, pos.y - planarOffset.z));
     }
 
@@ -291,7 +328,7 @@ public class StepTiler : MonoBehaviour {
             return heightScale * topology[(int)(localPos.x + planarOffset.x), (int)(localPos.z + planarOffset.z)];
         } catch (System.IndexOutOfRangeException)
         {
-            return 0f;
+            throw new OutsideMapException();
         }
     }
 
@@ -403,14 +440,14 @@ public class StepTiler : MonoBehaviour {
             tileParent.localPosition = Vector3.zero;
         }
 
-        for (int x = 0; x < worldSize; x++)
+        for (int y = 0; y < worldSize; y++)
         {
-            for (int y = 0; y < worldSize; y++)
+            for (int x = 0; x < worldSize; x++)
             {
                 float elevation = GetElevation(x, y);                
 
-                topology[x, y] = Mathf.RoundToInt(elevation);
-                occupancy[x, y] = false;
+                topology[y, x] = Mathf.RoundToInt(elevation);
+                occupancy[y, x] = false;
 
                 if (groundGenerationType == GroundGenerationType.TiledPrefabs)
                 {
@@ -445,9 +482,37 @@ public class StepTiler : MonoBehaviour {
         }
     }
 
+    [SerializeField, Range(0, 1)]
+    float colorBlending = 0.25f;
+
+    Dictionary<GridPos, Color> colorSource = new Dictionary<GridPos, Color>();
+
+    public void SetColor(Vector2 pos, Color color)
+    {
+        SetColor(new GridPos((int)pos.x, (int)pos.y), color);
+    }
+
+    public void SetColor(GridPos pos, Color color)
+    {
+        if (groundGenerationType == GroundGenerationType.TiledPrefabs)
+        {
+            Renderer r = grid[pos].GetComponent<Renderer>();
+            Color c;
+            if (colorSource.ContainsKey(pos))
+            {
+                c = colorSource[pos];
+            }
+            else {
+                c = r.material.color;
+                colorSource[pos] = c;
+            }
+            r.material.color = Color.Lerp(c, color, colorBlending);
+        }
+    }
+
     Transform GetClone(int x, int y)
     {
-        GridPos pos = new GridPos(x, y);
+        GridPos pos = new GridPos(x, y).inverted;
         if (grid.ContainsKey(pos))
         {
             return grid[pos];

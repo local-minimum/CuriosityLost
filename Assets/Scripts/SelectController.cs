@@ -28,8 +28,12 @@ public class SelectController : MonoBehaviour {
 
     public void ClickLocation(Vector3 pos)
     {
-        
-        worldCanvas.transform.position = StepTiler.instance.GetGroundAt(pos) + Vector3.up * Yoffset;
+        try {
+            worldCanvas.transform.position = StepTiler.instance.GetGroundAt(pos) + Vector3.up * Yoffset;
+        } catch (OutsideMapException)
+        {
+            return;
+        }
         anim.SetTrigger(walkTargetTrigger);
     }
 
