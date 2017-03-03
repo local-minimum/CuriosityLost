@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: TileShader
+  m_Name: TileOutline
   m_Shader: {fileID: 4800000, guid: 297fb4975c2f2004dad1f8d8a5d72359, type: 3}
-  m_ShaderKeywords: _EMISSION
+  m_ShaderKeywords: PIXELSNAP_ON _EMISSION
   m_LightmapFlags: 1
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -48,7 +48,7 @@ Material:
     - first:
         name: _MainTex
       second:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 503d5582e7fa33e43bcfc7cea057806a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
@@ -64,12 +64,21 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
+        name: _OutlineTex
+      second:
+        m_Texture: {fileID: 2800000, guid: 00959d43fb0a9634c8e98d3040df71f9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
         name: _ParallaxMap
       second:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - first:
+        name: PixelSnap
+      second: 1
     - first:
         name: _BumpScale
       second: 1
@@ -95,14 +104,11 @@ Material:
         name: _HighlightBlending
       second: 0.2
     - first:
-        name: _HighlightDecay
-      second: 0.3
-    - first:
         name: _HighlightDuration
-      second: 10
+      second: 2
     - first:
         name: _HighlightTime
-      second: -2
+      second: 0
     - first:
         name: _Metallic
       second: 0
@@ -129,20 +135,23 @@ Material:
       second: 0
     - first:
         name: _WobbleAmp
-      second: 0.05
+      second: 0.1
     - first:
         name: _WobbleFreq
-      second: 5
+      second: 1
     - first:
         name: _ZWrite
       second: 1
     m_Colors:
     - first:
         name: _Color
-      second: {r: 1, g: 1, b: 1, a: 1}
+      second: {r: 0.83823526, g: 0.39446363, b: 0.6607268, a: 1}
     - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}
     - first:
         name: _HighlightColor
       second: {r: 1, g: 1, b: 1, a: 1}
+    - first:
+        name: _ScanOrigin
+      second: {r: 0, g: 0, b: 0, a: 0}

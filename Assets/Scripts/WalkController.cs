@@ -227,6 +227,11 @@ public class WalkController : MonoBehaviour {
                 }
             }
 
+            if (Input.GetMouseButtonUp(1))
+            {
+                worldEntity.ScanSource();
+            }
+
             if (spacerMode == SpacerMode.Walking)
             {
                 float delta = (walkTarget - worldEntity.gridPosition).magnitude;

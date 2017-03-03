@@ -36,4 +36,9 @@ public class WorldEntity : MonoBehaviour {
         StepTiler.instance.SetColor(gridPosition, Color.white);
 
     }
+
+    public void ScanSource()
+    {
+        StepTiler.instance.ScanFrom(gridPosition);
+    }
 }
