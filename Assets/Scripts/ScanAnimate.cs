@@ -27,7 +27,6 @@ public class ScanAnimate : MonoBehaviour {
 
     static void SetWaveDuration(float t)
     {
-        duration = t;
         curWave.w = t;
         UpdateMaterials();
     }
@@ -82,6 +81,11 @@ public class ScanAnimate : MonoBehaviour {
         StartCoroutine(Wave(duration, speed, rollOff));
     }
 
+    public void Scan(Vector3 toPosition, float speed, float rollOff)
+    {
+        StartCoroutine(BounceWave(toPosition, speed, rollOff, 1f));
+    }
+
     IEnumerator<WaitForSeconds> Wave(float duration, float speed, float rollOff)
     {
         if (waving)
@@ -106,6 +110,57 @@ public class ScanAnimate : MonoBehaviour {
             curT = Time.timeSinceLevelLoad - startT;
             SetWaveDuration(curT * speed);
             yield return new WaitForSeconds(0.01f);
+        }
+
+        SetWaveDuration(-1);
+        waving = false;
+        Debug.Log("Scanning End");
+    }
+
+    IEnumerator<WaitForSeconds> BounceWave(Vector3 toPosition, float speed, float rollOff, float overshoot)
+    {
+        if (waving)
+        {
+            yield break;
+        }
+
+        Debug.Log("Scanning Start");
+        waving = true;
+
+        ScanAnimate.speed = speed;
+        duration = Vector3.Magnitude(transform.position - toPosition) / speed;
+
+        SetWaveOrigin(transform.position);
+        SetWaveRollOff(rollOff);
+
+        float startT = Time.timeSinceLevelLoad;
+        float curT = 0;
+
+        Debug.Log(duration + overshoot);
+
+        while (curT < (duration + overshoot))
+        {
+            curT = Time.timeSinceLevelLoad - startT;
+            SetWaveDuration(curT * speed);
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        Debug.Log("Scan Bounce");
+
+        SetWaveDuration(-1);
+        SetWaveOrigin(toPosition);
+
+        startT = Time.timeSinceLevelLoad;
+        curT = 0;
+        duration = Vector3.Magnitude(transform.position - toPosition) / speed;
+
+        while (curT < duration + overshoot)
+        {
+            curT = Time.timeSinceLevelLoad - startT;
+            SetWaveDuration(curT * speed);
+            yield return new WaitForSeconds(0.01f);
+            duration = Vector3.Magnitude(transform.position - toPosition) / speed;
+
         }
 
         SetWaveDuration(-1);

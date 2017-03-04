@@ -522,6 +522,11 @@ public class StepTiler : MonoBehaviour {
         ScanFrom(new GridPos((int)pos.x, (int)pos.y), duration, speed, rollOff);
     }
 
+    public void ScanFrom(Vector2 pos, Vector3 toPosition, float speed, float rollOff)
+    {
+        ScanFrom(new GridPos((int)pos.x, (int)pos.y), toPosition, speed, rollOff);
+    }
+
     public void ScanFrom(GridPos pos, float duration, float speed, float rollOff)
     {
         ScanAnimate sAnim = grid[pos].GetComponent<ScanAnimate>();
@@ -530,6 +535,16 @@ public class StepTiler : MonoBehaviour {
             sAnim.Scan(duration, speed, rollOff);
         }
     }
+
+    public void ScanFrom(GridPos pos, Vector3 toPosition, float speed, float rollOff)
+    {
+        ScanAnimate sAnim = grid[pos].GetComponent<ScanAnimate>();
+        if (sAnim)
+        {
+            sAnim.Scan(toPosition, speed, rollOff);
+        }
+    }
+
     Transform GetClone(int x, int y)
     {
         GridPos pos = new GridPos(x, y).inverted;

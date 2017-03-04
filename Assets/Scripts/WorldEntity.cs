@@ -41,4 +41,9 @@ public class WorldEntity : MonoBehaviour {
     {
         StepTiler.instance.ScanFrom(gridPosition, duration, speed, rollOff);
     }
+
+    public void ScanSource(Vector3 toPosition, float speed, float rollOff)
+    {
+        StepTiler.instance.ScanFrom(gridPosition, toPosition, speed, rollOff);
+    }
 }

@@ -239,8 +239,8 @@ public class WalkController : MonoBehaviour {
             if (Input.GetMouseButtonUp(1) || Input.GetKeyDown(KeyCode.Space))
             {
                 Debug.Log("Scan requested");
-
-                worldEntity.ScanSource(scanDuration, scanSpeed, scanRollOff);
+                
+                worldEntity.ScanSource(ship.transform.position, scanSpeed, scanRollOff);
             }
 
             if (spacerMode == SpacerMode.Walking)
