@@ -417,6 +417,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   walkSpeed: 1
+  scanSpeed: 4.3
+  scanRollOff: 2
   obstacleCasting:
     serializedVersion: 2
     m_Bits: 1536
@@ -957,9 +959,8 @@ MonoBehaviour:
   perlinBFrequency: {x: 0.3, y: 0.3}
   perlinBPower: 2
   prefab: {fileID: 4977716362472558, guid: 5613a620ad4b8b84784fb1e1b585b3c8, type: 2}
-  lowHeight: {r: 0.41911763, g: 0.21916537, b: 0.16025086, a: 1}
-  highHeight: {r: 0.7843138, g: 0.7816, b: 0.105882354, a: 1}
-  colorBlending: 0.15
+  lowHeight: {r: 0.41911763, g: 0.43144462, b: 0.43144462, a: 1}
+  highHeight: {r: 0.6985294, g: 0.69859105, b: 0.7139382, a: 1}
   uvScaling: {x: 13, y: 13}
   debugDrawGizmo: 1
 --- !u!224 &668401456

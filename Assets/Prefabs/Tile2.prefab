@@ -107,5 +107,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugging: 0
-  speed: 2.5
-  duration: 5
