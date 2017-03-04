@@ -272,10 +272,18 @@ public class WalkController : MonoBehaviour {
             SetSprite();
         }
 
-        if (EnterCollider<Discoverable>(discoverableCasting, TestDiscoverable, RespondDiscoverable) && !selectedDiscoverable.discovered)
+        if (sRend.enabled)
         {
-            MessageBar.instance.Prompt("INVESTIGATE?");
+            if (EnterCollider<SpaceShip>(obstacleCasting, TestShip, RespondShip))
+            {
+                MessageBar.instance.Prompt("EMBARK");
+            }
+            else if (EnterCollider<Discoverable>(discoverableCasting, TestDiscoverable, RespondDiscoverable) && !selectedDiscoverable.discovered)
+            {
+                MessageBar.instance.Prompt("INVESTIGATE?");
+            }
         }
+        
     }
 
     [SerializeField]
@@ -330,6 +338,35 @@ public class WalkController : MonoBehaviour {
     }
 
     enum CollisionRespons { Continue, True, False, CarryOn};
+
+    bool nextToShip = true;
+
+    CollisionRespons TestShip(SpaceShip ship)
+    {
+        if (ship == null)
+        {
+            return CollisionRespons.Continue;
+        } else if (nextToShip)
+        {
+            return CollisionRespons.False;
+        }
+        return CollisionRespons.CarryOn;
+    }
+
+    bool RespondShip(SpaceShip firstFound)
+    {
+        if (firstFound == null && nextToShip && !MessageBar.instance.showing)
+        {
+            MessageBar.instance.Prompt("LET EXPLORE...");
+            nextToShip = false;
+        } else if (firstFound != null && !nextToShip)
+        {
+            MessageBar.instance.Prompt("EMBARK");
+            nextToShip = true;
+        }
+       
+        return false;
+    }
 
     CollisionRespons TestDiscoverable(Discoverable tmp)
     {
