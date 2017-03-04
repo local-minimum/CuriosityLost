@@ -9,11 +9,11 @@ public class ScanAnimate : MonoBehaviour {
 
     bool over = false;
 
-    [SerializeField]
-    float speed = 1f;
+    static float rollOff = 2f;
 
-    [SerializeField]
-    float duration = 10;
+    static float speed = 1f;
+
+    static float duration = 10;
 
     static bool waving = false;
 
@@ -21,14 +21,25 @@ public class ScanAnimate : MonoBehaviour {
 
     static void SetWaveOrigin(Vector3 pos)
     {
-        curWave.Set(pos.x, pos.y, pos.y, -1);
+        curWave.Set(pos.x, pos.y, pos.z, -1);
         UpdateMaterials();
     }
 
     static void SetWaveDuration(float t)
     {
+        duration = t;
         curWave.w = t;
         UpdateMaterials();
+    }
+
+    static void SetWaveRollOff(float r)
+    {
+        rollOff = r;
+        for (int i = 0; i < nRends; i++)
+        {
+            waveRenderers[i].material.SetFloat("_ScanRollOff", rollOff);
+        }
+
     }
 
     static void UpdateMaterials()
@@ -57,16 +68,21 @@ public class ScanAnimate : MonoBehaviour {
 	void Update () {
 		if (debugging && over && Input.GetMouseButtonDown(0))
         {
-            Scan();
+            Scan(duration, speed, rollOff);
         }
 	}
 
     public void Scan()
     {
-        StartCoroutine(Wave());
+        StartCoroutine(Wave(duration, speed, rollOff));
     }
 
-    IEnumerator<WaitForSeconds> Wave()
+    public void Scan(float duration, float speed, float rollOff)
+    {
+        StartCoroutine(Wave(duration, speed, rollOff));
+    }
+
+    IEnumerator<WaitForSeconds> Wave(float duration, float speed, float rollOff)
     {
         if (waving)
         {
@@ -76,9 +92,15 @@ public class ScanAnimate : MonoBehaviour {
         Debug.Log("Scanning Start");
         waving = true;
 
+        ScanAnimate.speed = speed;
+        ScanAnimate.duration = duration;
+
         float startT = Time.timeSinceLevelLoad;
         float curT = 0;
-        SetWaveOrigin(transform.position);        
+
+        SetWaveOrigin(transform.position);
+        SetWaveRollOff(rollOff);
+               
         while (curT < duration)
         {
             curT = Time.timeSinceLevelLoad - startT;

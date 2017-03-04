@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 33073349335129434}
   - component: {fileID: 64674893804341412}
   - component: {fileID: 23623672018375530}
+  - component: {fileID: 114006509037446624}
   m_Layer: 8
   m_Name: Tile2
   m_TagString: Untagged
@@ -94,3 +95,17 @@ MeshCollider:
   m_InflateMesh: 0
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &114006509037446624
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1340687607767208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ce906efbc9cd7646ae0c47d8f22e887, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugging: 0
+  speed: 2.5
+  duration: 5

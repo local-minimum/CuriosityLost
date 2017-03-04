@@ -191,6 +191,15 @@ public class WalkController : MonoBehaviour {
     [SerializeField]
     float walkSpeed = 1f;
 
+    [SerializeField]
+    float scanDuration = 4.2f;
+
+    [SerializeField]
+    float scanSpeed = 4.3f;
+
+    [SerializeField]
+    float scanRollOff = 2f;
+
     void Update()
     {
         if (spacerMode != SpacerMode.Investigating)
@@ -227,9 +236,11 @@ public class WalkController : MonoBehaviour {
                 }
             }
 
-            if (Input.GetMouseButtonUp(1))
+            if (Input.GetMouseButtonUp(1) || Input.GetKeyDown(KeyCode.Space))
             {
-                worldEntity.ScanSource();
+                Debug.Log("Scan requested");
+
+                worldEntity.ScanSource(scanDuration, scanSpeed, scanRollOff);
             }
 
             if (spacerMode == SpacerMode.Walking)

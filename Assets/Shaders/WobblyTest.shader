@@ -14,6 +14,7 @@ Shader "Custom/WobblyTest" {
 		_HighlightTime("Highlight Time", float) = 0
 		_ScanOrigin("Scan Origin", Vector) = (0, 0, 0, 0)
 		_ScanLength("Scan Length", float) = 1
+		_ScanRollOff("Scan RollOff", float) = 2
 	}
 	SubShader 
 	{	
@@ -53,6 +54,7 @@ Shader "Custom/WobblyTest" {
 			
 			float4 _ScanOrigin;
 			float _ScanLength;
+			float _ScanRollOff;
 
 			v2f vert(appdata v) {
 				v2f o;
@@ -75,7 +77,7 @@ Shader "Custom/WobblyTest" {
 				float trailing = saturate(1 - progress / _ScanLength);
 
 				if (progress > 0) {
-					outline.a = outline.a * pow(trailing, 2);
+					outline.a = outline.a * pow(trailing, _ScanRollOff);
 					outline.rgb = outline.rbg * outline.a;
 					color = saturate(color + outline);
 				}
