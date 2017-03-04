@@ -485,9 +485,6 @@ public class StepTiler : MonoBehaviour {
         }
     }
 
-    [SerializeField, Range(0, 1)]
-    float colorBlending = 0.25f;
-
     public void SetColor(Vector2 pos, Color color)
     {
         SetColor(new GridPos((int)pos.x, (int)pos.y), color);

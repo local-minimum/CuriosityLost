@@ -192,9 +192,6 @@ public class WalkController : MonoBehaviour {
     float walkSpeed = 1f;
 
     [SerializeField]
-    float scanDuration = 4.2f;
-
-    [SerializeField]
     float scanSpeed = 4.3f;
 
     [SerializeField]
