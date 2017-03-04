@@ -136,8 +136,6 @@ public class ScanAnimate : MonoBehaviour {
         float startT = Time.timeSinceLevelLoad;
         float curT = 0;
 
-        Debug.Log(duration + overshoot);
-
         while (curT < (duration + overshoot))
         {
             curT = Time.timeSinceLevelLoad - startT;
