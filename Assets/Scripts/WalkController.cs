@@ -67,7 +67,8 @@ public class WalkController : MonoBehaviour {
         col = GetComponent<Collider>();
         sRend = GetComponent<SpriteRenderer>();
         sRend.enabled = false;
-        SetIsAnimated();        
+        SetIsAnimated();
+        DontDestroyOnLoad(gameObject);       
     }
 
     void OnEnable()
@@ -271,7 +272,7 @@ public class WalkController : MonoBehaviour {
             SetSprite();
         }
 
-        if (EnterDiscoverable() && !selectedDiscoverable.discovered)
+        if (EnterCollider<Discoverable>(discoverableCasting, TestDiscoverable, RespondDiscoverable) && !selectedDiscoverable.discovered)
         {
             MessageBar.instance.Prompt("INVESTIGATE?");
         }
@@ -328,38 +329,65 @@ public class WalkController : MonoBehaviour {
         }
     }
 
-    bool EnterDiscoverable()
+    enum CollisionRespons { Continue, True, False, CarryOn};
+
+    CollisionRespons TestDiscoverable(Discoverable tmp)
     {
-        Bounds b = col.bounds;
-        Collider[] overlaps = Physics.OverlapBox(b.center, b.size / 2f, Quaternion.identity, discoverableCasting);
-        Discoverable firstFound = null;
-
-        for (int i=0; i<overlaps.Length; i++)
+        if (tmp == null || tmp.discovered)
         {
-            Discoverable tmp = overlaps[i].GetComponent<Discoverable>();
-            if (tmp == null || tmp.discovered)
-            {
-                continue;
-            }
-
-            if (selectedDiscoverable == null)
-            {
-                selectedDiscoverable = tmp;
-                return true;
-            } else if (selectedDiscoverable == tmp)
-            {
-                return false;
-            } else if (firstFound == null)
-            {
-                firstFound = tmp;
-            }
+            return CollisionRespons.Continue;
         }
+
+        if (selectedDiscoverable == null)
+        {
+            selectedDiscoverable = tmp;
+            return CollisionRespons.True;
+        }
+        else if (selectedDiscoverable == tmp)
+        {
+            return CollisionRespons.False;
+        }
+
+        return CollisionRespons.CarryOn;
+    }
+
+    bool RespondDiscoverable(Discoverable firstFound)
+    {
         if (firstFound == null && selectedDiscoverable != null && !selectedDiscoverable.discovered && !MessageBar.instance.showing)
         {
             MessageBar.instance.Prompt("YEAH LETS NOT...");
         }
         selectedDiscoverable = firstFound;
         return firstFound != null;
+    }
+
+    bool EnterCollider<T>(LayerMask mask, System.Func<T,CollisionRespons> test, System.Func<T, bool> response) where T : MonoBehaviour
+    {
+        Bounds b = col.bounds;
+        Collider[] overlaps = Physics.OverlapBox(b.center, b.size / 2f, Quaternion.identity, mask);
+        T firstFound = null;
+
+        for (int i=0; i<overlaps.Length; i++)
+        {
+            T tmp = overlaps[i].GetComponent<T>();
+
+            switch (test(tmp))
+            {
+                case CollisionRespons.Continue:
+                    continue;
+                case CollisionRespons.True:
+                    return true;
+                case CollisionRespons.False:
+                    return false;
+            }
+                        
+            if (firstFound == null)
+            {
+                firstFound = tmp;
+            }
+        }
+
+        return response(firstFound);
     }
 
     void SetIsAnimated()
