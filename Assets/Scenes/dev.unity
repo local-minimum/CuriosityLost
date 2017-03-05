@@ -497,6 +497,31 @@ MonoBehaviour:
   decaySpeedMoving: -0.0075
   decaySpeedStaning: -0.0025
   vigorEffects: {fileID: 2111902990}
+  maxInterestDistance: 8
+  InterestDecay:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.26
+      value: 1
+      inSlope: 0
+      outSlope: -4.47558
+      tangentMode: 1
+    - serializedVersion: 2
+      time: 1
+      value: 0
+      inSlope: -0.08017851
+      outSlope: -0.08017851
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
   rejuvinationSpeed: 0.1
   rejuvinationSteps: 40
 --- !u!114 &129777255
@@ -1165,6 +1190,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   importPath: Discoverables/English
+  importAs: 
 --- !u!4 &772083762
 Transform:
   m_ObjectHideFlags: 0

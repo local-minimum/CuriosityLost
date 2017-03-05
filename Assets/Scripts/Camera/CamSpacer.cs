@@ -4,6 +4,37 @@ using UnityEngine;
 
 public class CamSpacer : MonoBehaviour {
 
+    
+    static CamSpacer _instance;
+
+    public static CamSpacer instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                FindObjectOfType<CamSpacer>();
+            }
+            return _instance;
+        }
+    }
+
+    public static MoodyMan MoodyMan
+    {
+        get
+        {
+            return instance.player.GetComponent<MoodyMan>();
+        }
+    }
+
+    public static Vector3 TrackingPoint
+    {
+        get
+        {
+            return instance.player.transform.position;
+        }
+    }
+
     [SerializeField]
     Transform planet;
 
@@ -34,6 +65,14 @@ public class CamSpacer : MonoBehaviour {
 
     void Awake()
     {
+        if (_instance == null || _instance == this)
+        {
+            _instance = this;
+        } else
+        {
+            Destroy(this);
+            return;
+        }
         moodyCtrl = player.GetComponent<MoodyMan>();
         currentStationaryRelativeScreenRect = stationaryRelativeScreenRect;
     }
@@ -52,6 +91,11 @@ public class CamSpacer : MonoBehaviour {
     {
         player.OnDisembark -= DisembarkHandler;
         moodyCtrl.OnMoodChange -= CamSpacer_OnMoodChange;
+    }
+
+    void OnDestroy()
+    {
+        _instance = null;
     }
 
     private void CamSpacer_OnMoodChange(float mood)

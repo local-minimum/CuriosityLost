@@ -84,6 +84,7 @@ MonoBehaviour:
   typeName: Crystal
   discovered: 0
   worldEntity: {fileID: 114360587491097872}
+  desaturationMax: 0.9
 --- !u!212 &212129523742896522
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -97,7 +98,7 @@ SpriteRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: ecf82c1f5507a6a40ab4f3bc4785f3b9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -33,11 +33,27 @@ public class Discoverable : MonoBehaviour {
     
     public WorldEntity worldEntity;
 
-	void Start () {        
+    [Range(0, 1)]
+    public float desaturationMax = 0.9f;
+
+
+	void Start () {
+        rend = GetComponent<Renderer>();  
         worldEntity = GetComponent<WorldEntity>();
         RegisterMe(this);
 	}
-	
+
+    Renderer rend;
+
+    void Update()
+    {
+        if (rend.isVisible)
+        {
+            rend.material.SetFloat("_Desaturation", discovered ? desaturationMax :
+                Mathf.Lerp(desaturationMax, 0, CamSpacer.MoodyMan.EvaluateInterestRange(Vector3.Distance(CamSpacer.TrackingPoint, transform.position))));
+        }
+    }
+
     public void Investigate() {
         discovered = true;        
     }

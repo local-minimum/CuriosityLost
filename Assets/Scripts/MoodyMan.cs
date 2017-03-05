@@ -41,6 +41,17 @@ public class MoodyMan : MonoBehaviour {
 
     WalkController walker;
 
+    [SerializeField]
+    float maxInterestDistance = 40;
+
+    [SerializeField]
+    AnimationCurve InterestDecay;
+
+    public float EvaluateInterestRange(float distance)
+    {
+        return InterestDecay.Evaluate(Mathf.Clamp01(distance / maxInterestDistance));
+    }
+
     void Awake()
     {
         walker = GetComponent<WalkController>();
