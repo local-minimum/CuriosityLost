@@ -1164,7 +1164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b83b2cde7d460504684647ccfaab7d0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  importPath: English
+  importPath: Discoverables/English
 --- !u!4 &772083762
 Transform:
   m_ObjectHideFlags: 0

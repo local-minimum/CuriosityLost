@@ -1,0 +1,3 @@
+The mineral content of the [thing|crystal] was [highly uncommon{curiosity > 3}|unusual|very wrong{+1 conservative, -1 curiosity}].
+
+The reflection on the surface was not of the immidiate surrounding, but definately from this planet. [Strange|Weird{+1 curiosity}].
